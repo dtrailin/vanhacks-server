@@ -30,11 +30,22 @@ var mountPath = process.env.PARSE_MOUNT || '/parse';
 app.use(mountPath, api);
 
 // Parse Server plays nicely with the rest of your web routes
+var port = process.env.PORT || 1337;
+app.listen(port, function() {
+  console.log('VanHacks project running on port ' + port + '.');
+});
+
 app.get('/', function(req, res) {
   res.status(200).send('I dream of being a web site.');
 });
 
-var port = process.env.PORT || 1337;
-app.listen(port, function() {
-    console.log('parse-server-example running on port ' + port + '.');
-});
+app.route('/users')
+  .get(function(req, res) {
+    res.status(200).send('GET user by ID, not yet implemented');
+  })
+  .post(function(req, res) {
+    res.status(200).send('POST user, not yet implemented');
+  })
+  .put(function(req, res) {
+    res.status(200).send('PUT user, not yet implemented')
+  });
