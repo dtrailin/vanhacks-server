@@ -36,16 +36,17 @@ app.listen(port, function() {
 });
 
 app.get('/', function(req, res) {
-  res.status(200).send('I dream of being a web site.');
+  console.log('Calling VanHacks service');
+  res.status(200);
 });
 
-app.route('/users')
-  .get(function(req, res) {
-    res.status(200).send('GET user by ID, not yet implemented');
-  })
-  .post(function(req, res) {
-    res.status(200).send('POST user, not yet implemented');
-  })
-  .put(function(req, res) {
-    res.status(200).send('PUT user, not yet implemented')
-  });
+app.get('/info', function(req, res) {
+  var description =
+  'VanHacks Project \n\
+  Targeted Non-Profit Organization: Ending Violence Association of BC (by way of PeaceGeeks) works to coordinate \
+  and support the work of victim-serving and other anti-violence programs in British Columbia. \n\
+  Team: Madeleine Chercover, Tammy Liu, Dennis Trailin, Mathew Teoh, Daniel Tsang \n\
+  Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
+  console.log('GET /info' + '\n' + description);
+  res.status(200).send('VanHacks Spidermans-webdevs service is up');
+});
