@@ -1,13 +1,21 @@
 {
-  "name": "parse-server-example",
-  "version": "1.2.0",
-  "description": "An example Parse API server using the parse-server module",
+  "name": "security-server",
+  "version": "1.0.0",
+  "description": "A backend for the Vanhacks security app",
   "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ParsePlatform/parse-server-example"
+    "url": "git+https://github.com/dtrailin/vanhacks-server.git"
   },
-  "license": "MIT",
+  "author": "Denis, Tammy, Matt, Daniul, Madeline",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dtrailin/vanhacks-server/issues"
+  },
+  "homepage": "https://github.com/dtrailin/vanhacks-server#readme",
   "dependencies": {
     "express": "~4.2.x",
     "kerberos": "~0.0.x",
