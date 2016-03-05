@@ -10,11 +10,11 @@
     },
     "APP_ID": {
       "description": "A unique identifier for your app.",
-      "value": ""
+      "value": "VanHacks"
     },
     "MASTER_KEY": {
       "description": "A key that overrides all permissions. Keep this secret.",
-      "value": ""
+      "value": "spiderman"
     },
     "DATABASE_URI": {
       "description": "Connection string for your database.",
