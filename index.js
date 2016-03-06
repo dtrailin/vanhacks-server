@@ -96,29 +96,12 @@ app.get('/message/out', function(req, res) {
 // Post new incoming message to service
 app.post('/message/in', function(req, res) {
    console.log('Twilio: receiving message to ' + serviceNum + '\n' + req);
-
-  //  if (twilio.validateExpressRequest(req, 'YOUR_TWILIO_AUTH_TOKEN')) {
-  //        var resp = new twilio.TwimlResponse();
-  //        resp.say('yayayayayayaya ');
-   //
-  //        res.type('text/xml');
-  //        res.send(resp.toString());
-  //    }
-
+   
    var request = '';
-   request += 'req ' + req;
-   request += '\nmethod ' + req.method;
-   request += '\nrawBody ' + req.rawBody;
-   request += '\nquery ' + req.query;
-   request += '\nparams ' + req.params;
+   request += '\nquery ' + JSON.stringify(req.query);
+   request += '\nparams ' + JSON.stringify(req.params);
    request += '\nurl ' + req.url;
-   request += '\nURL ' + req.URL;
-   request += '\nheaders ' + req.headers;
-   console.log(request);
-
-  //reset request
-   request = '\n Body ' + req.Body;
-   request += '\n From ' + req.From;
+   request += '\nheaders ' + JSON.stringify(req.headers);
    console.log(request);
 
     // twilio.messages.create({
