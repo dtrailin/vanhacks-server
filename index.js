@@ -114,7 +114,7 @@ app.post('/message/in', function(req, res) {
    req += '\nurl ' + req.url;
    req += '\nURL ' + req.URL;
    req += '\nheaders ' + req.headers;
-   console.log(body);
+   console.log(req);
 
    var request = '\n Body ' + req.Body;
    request += '\n From ' + req.From;
