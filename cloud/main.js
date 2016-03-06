@@ -155,8 +155,11 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
   });
 
   console.log('afterSave HelpEvent being called');
-  console.log(request);
-  console.log(JSON.stringify(request));
+  var object = request.object;
+  var lat = object.lat;
+  var lon = objct.lon;
+  var email = request.user.email;
+  console.log(object, lat, long, email);
 
   // query = new Parse.Query('User');
   // query.get(request.body('user').id, {
