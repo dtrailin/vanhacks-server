@@ -37,7 +37,6 @@ app.listen(port, function() {
 
 
 // Endpoints
-
 function responseLogger(status, success, message) {
   var message = success ? message + ' SUCCESS' : message + ' ERROR';
   console.log(status + ' - ' + message);
@@ -55,14 +54,13 @@ app.get('/info', function(req, res) {
   and support the work of victim-serving and other anti-violence programs in British Columbia. \n\
   Team: Madeleine Chercover, Tammy Liu, Dennis Trailin, Mathew Teoh, Daniel Tsang \n\
   Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
-  responseLogger(200, true, 'GET /info' + '\n' + description);
+  responseLogger(200, true, req.method + ' ' + req.url + '\n' + description);
   res.send(200);
 });
 
 
 // Twilio
 
-//test credentials
 var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
 var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
 var twilio = require('twilio')(accountSid, authToken);
@@ -83,11 +81,11 @@ app.get('/message/out', function(req, res) {
       from: serviceNum
   }, function(err, message) {
     if(err){
-      responseLogger(500, false, 'GET /message/out Twilio create and send message');
+      responseLogger(500, false, req.method + ' ' + req.url + ' Twilio create and send message');
       res.send(500).render('error', { error: err });
     } else {
       var sId = message.sid;
-      responseLogger(200, true, 'GET /message/out Twilio create and send message');
+      responseLogger(200, true, req.method + ' ' + req.url + ' Twilio create and send message');
       res.status(200).send('Twilio client: sending message');
     }
   });
@@ -97,20 +95,31 @@ app.get('/message/out', function(req, res) {
 app.post('/message/in', function(req, res) {
    console.log('Twilio: receiving message to ' + serviceNum);
 
-   console.log(req.body);
+   if(String(req.body.To) === serviceNum) {
+     var sId = req.body.SmsMessageSid,
+         message = req.body.Body,
+         fromNum = req.body.From;
 
-    // twilio.messages.create({
-    //   body: "Message received!! :D yayay",
-    //   to: securityNum,
-    //   from: serviceNum,
-    // }, function(err, message) {
-    //   if(err){
-    //     responseLogger(500, false, 'POST /message/in Twilio response message');
-    //     res.send(500).render('error', { error: err });
-    //   } else ClassName.prototype.methodName = function () {
-    //     responseLogger(200, true, 'POST /message/in Twilio response message');
-    //     console.log(req.Body);
-    //     res.status(200).send('Twilio client: responding to message');
-    //   };
-    // });
+     responseLogger(200, true, req.method + ' ' + req.url + ' Twilio receive message');
+
+     // TODO check database for user, and send to security
+
+    // User response
+     twilio.messages.create({
+       body: "Message received! :)",
+       to: fromNum,
+       from: serviceNum,
+     }, function(err, message) {
+       if(err){
+         responseLogger(500, false, req.method + ' ' + req.url + ' Twilio response message');
+         res.send(500).render('error', { error: err });
+       } else {
+         responseLogger(200, true, req.method + ' ' + req.url + ' Twilio response message');
+         res.status(200).send('Twilio client: responding to message');
+       };
+     });
+   } else {
+     responseLogger(500, false, req.method + ' ' + req.url + ' Twilio receive message');
+   }
+
 });
