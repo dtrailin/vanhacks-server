@@ -22,9 +22,9 @@ Parse.Cloud.define('submitForm', function(request, response) {
                 user.set('email', email);
                 user.save(null, {
                     success: function(user) {
-                        response.success('sup');
+                        response.success(user);
                     },
-                    error: function(user) {
+                    error: function(err) {
                         response.error('Unable to save user.');
                     }
                 });
@@ -42,7 +42,7 @@ Parse.Cloud.define('submitForm', function(request, response) {
                 user.signUp(username, password, attrs, {
                     success: function(user) {
                         // Success
-                        response.success('sup');
+                        response.success(user);
                     },
                     error: function(error) {
                         // Error
@@ -50,6 +50,9 @@ Parse.Cloud.define('submitForm', function(request, response) {
                     }
                 });
             }
+        },
+        error: function(err) {
+            response.error('bad query');
         }
     });
 });
