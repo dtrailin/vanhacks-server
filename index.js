@@ -83,8 +83,10 @@ function sendMessage(to, from, body) {
       to: securityNum,
       from: serviceNum
   }, function(err, message) {
-    if(err) return false;
-    else return true;
+    if(err) {
+      errorHandler(JSON.stringify(err));
+      return false;
+    } else return true;
   });
 };
 
@@ -108,8 +110,7 @@ app.post('/message/in', function(req, res) {
        res.status(SUCCESS).send('Twilio client: responding to message');
      } else {
        responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and create message\n' + req.body);
-       errorHandler(JSON.stringify(err));
-       res.send(UNKNOWN_CLIENT_ERROR);
+       res.status(UNKNOWN_CLIENT_ERROR);
      }
    } else {
      responseLogger(BADREQUEST, 'Twilio receive message');
