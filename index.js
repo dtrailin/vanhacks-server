@@ -1,13 +1,23 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var ParseServer = require('parse-server').ParseServer;
+var http = require('http');
 
 var SUCCESS = 200;
 var BADREQUEST = 400;
 var NOTFOUND = 404;
 var UNKNOWN_CLIENT_ERROR = 500;
 
+// Basic Functiosn
+function responseLogger(status, message) {
+  console.log(status + ' - ' + message);
+}
 
+function isEmpty(arr) {
+  return JSON.stringify(arr) === JSON.stringify({}) ? true : false;
+}
+
+// Parse App
 var databaseUri = process.env.DATABASE_URI || process.env.MONGOLAB_URI;
 if (!databaseUri) {
   console.log('DATABASE_URI not specified, falling back to localhost.');
@@ -42,17 +52,29 @@ app.listen(port, function() {
 });
 
 
-// Endpoints
-function responseLogger(status, message) {
-  console.log(status + ' - ' + message);
-}
-function errorHandler(error) {
-  console.log('Error: ' + error);
-}
 
+// External API Endpoints
+// Reverse geocoding to get address from coordinates
+// var getRequest = http.get(url, function (response) {
+//     var buffer = '', data, route;
+//
+//     response.on("data", function (chunk) {
+//         buffer += chunk;
+//     });
+//
+//     response.on("end", function (err) {
+//         // finished transferring data
+//         // dump the raw data
+//         responseLogger(100, buffer);
+//         data = JSON.parse(buffer);
+//     });
+// });
+
+// VanHacks project
+// Endpoints
 app.get('/', function(req, res) {
-  responseLogger(SUCCESS, 'Calling VanHacks service')
-  res.status(SUCCESS);
+  responseLogger(SUCCESS, 'Calling VanHacks service');
+  res.success();
 });
 
 app.get('/info', function(req, res) {
@@ -64,11 +86,11 @@ app.get('/info', function(req, res) {
   Team: Madeleine Chercover, Tammy Liu, Dennis Trailin, Mathew Teoh, Daniel Tsang \n\
   Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
   responseLogger(SUCCESS, true, req.method + ' ' + req.url + '\n' + description);
-  res.status(SUCCESS);
+  res.success();
 });
 
-// Twilio
 
+// Twilio
 var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
 var authToken = '92ea91beabd04e0cfd3fcbff68c8f0ae';
 var twilio = require('twilio')(accountSid, authToken);
@@ -77,38 +99,62 @@ var serviceNum = '+16042391416';
 var securityNum = '+16479953366';
 
 // POST from Twilio
-// @param text message sent to serviceNumber +16042391416
-// @return text back
+// @initializer text message sent to serviceNumber +16042391416
+// @return text to security, and back to user
 app.post('/message/in', function(req, res) {
-   console.log(req.method + ' ' + req.url + ' Twilio: receiving message to ' + req.body.To);
+  console.log(req.method + ' ' + req.url + ' Twilio: receiving message to ' + req.body.To);
+  try {
+    if(isEmpty(req.body)) throw BADREQUEST;   //empty body
+    if(String(req.body.To) != String(serviceNum)) throw BADREQUEST;   //not send to Twilio number
 
-   if(String(req.body.To) === serviceNum || true) {
-     var sId = req.body.SmsMessageSid,
-         message = req.body.Body,
-         fromNum = String(req.body.From);
+    var message = req.body.Body,
+        fromNum = String(req.body.From);
+    responseLogger(SUCCESS, 'Twilio received message to ' + serviceNum + ' from ' + fromNum + ', with SmsSid: ' + req.body.SmsMessageSid);
 
-     responseLogger(SUCCESS, 'Twilio received message sending message to ' + serviceNum + ' from ' + fromNum);
+    // TODO parse message for home and current location, then send data to security
 
-     // TODO check database for user, and send info to security
+    try {
+      // TODO query by phone number, and populate user data from database
+      var loadUser = JSON.parse('{}'); // WIP, load from database
+      var securityMessage = '<Insert security message>';
 
-     var body = 'Message received! :D';
-     twilio.messages.create({
-         body: body,
-         to: fromNum,
-         from: serviceNum
-     }, function(err, message) {
-       if(err) {
-         responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and did not create message\n' + JSON.stringify(req.body));
-         res.status(UNKNOWN_CLIENT_ERROR);
-       } else {
-         responseLogger(SUCCESS, 'Twilio response and created message');
-         res.status(SUCCESS).send('Twilio client: responded to message');
-       }
-     });
-   } else {
-     responseLogger(BADREQUEST, 'Twilio receive message');
-     res.status(BADREQUEST);
-   }
+      twilio.messages.create({
+        body: securityMessage,
+        to: securityNum,
+        from: serviceNum
+      }, function(err, message) {
+        if(err){
+          responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to \n' + JSON.stringify(loadUser));
+          res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + fromNum);
+        } else {
+          responseLogger(SUCCESS, 'Twilio sent security message from ' + fromNum);
+
+          // Respond to user with bogo message
+          var reply = 'Congratulations! You just won an all expenses paid trip to Bucharest, Romania. Please call within 24 hours to claim your prize.';
+          twilio.messages.create({
+             body: reply,
+             to: fromNum,
+             from: serviceNum
+          }, function(err, message) {
+           if(err) {
+             responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio did not reply to user\n' + JSON.stringify(req.body));
+             res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not reply to user');
+           } else {
+             responseLogger(SUCCESS, 'Twilio responded to message');
+             res.status(SUCCESS).send('Twilio client: responded to message');
+           }
+          });
+        }
+      });
+
+    } catch(err) {
+      responseLogger(err, 'VanHacks service failed to retrieve member from database');
+      res.status(err).send('VanHacks service failed to retrieve member from database');
+    }
+  } catch (err) {
+  responseLogger(err, 'Twilio message receive ERROR');
+  res.status(err).send('Twilio message receive ERROR');
+  }
 });
 
 // POST from direct URL
@@ -117,5 +163,5 @@ app.post('/sendHelp', function(req, res) {
   console.log(req.method + ' ' + req.url + ' VanHacks service: receiving data externally');
 
   //TODO get data fields from body
-
+  res.success();
 });
