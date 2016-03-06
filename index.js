@@ -4,7 +4,7 @@ var ParseServer = require('parse-server').ParseServer;
 var http = require('http');
 
 // Database
-var MongoClient = require('mongodb').MongoClient;
+var db = require('mongodb');
 var dbUrl = 'mongodb://localhost:27017/test';
 
 var SUCCESS = 200;
