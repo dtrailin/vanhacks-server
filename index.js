@@ -58,8 +58,8 @@ app.get('/info', function(req, res) {
 // Twilio
 
 //test credentials
-var accountSid = 'ACbc066431d618a4e120b1e4d54008d062';
-var authToken = "96030337ee308e86419b1981763f0d2a";
+var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
+var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
 var twilioClient = require('twilio')(accountSid, authToken);
 
 var serviceNum = "+16042391416";
