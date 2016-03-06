@@ -1,9 +1,4 @@
 // console.log(JSON.stringify(yourObject)); To print out out objects
-
-Parse.Cloud.define('hello', function(req, res) {
-  res.success('Hi');
-});
-
 Parse.Cloud.define('submitForm', function(request, response) {
     var firstName = request.params.firstName;
     var lastName = request.params.lastName;
@@ -12,22 +7,49 @@ Parse.Cloud.define('submitForm', function(request, response) {
     var password = request.params.password;
     var email = request.params.email;
 
-    var user = new Parse.User();
-    var attrs = {
-        'firstName': firstName,
-        'lastName': lastName,
-        'phone': phoneNumber,
-        'email': email
-    }
-
-    user.signUp(username, password, attrs, {
+    var query = new Parse.Query(Parse.User);
+    
+    query.equalTo('email', email);
+    // First is efficient for returning one user
+    query.first({
         success: function(user) {
-            // Success
-            response.success();
-        },
-        error: function(error) {
-            // Error
-            response.error("Unable to save user.");
+            if (user) {
+                // User already exists
+                user.set('firstName', firstName);
+                user.set('lastName', lastName);
+                user.set('phoneNumber', phoneNumber);
+                user.set('username', username);
+                user.set('email', email);
+                user.save(null. {
+                    success: function(user) {
+                        response.success();
+                    },
+                    error: function(user) {
+                        response.error('Unable to save user.');
+                    }
+                });
+            } else {
+                // Create new user
+                var attrs = {
+                    'firstName': firstName,
+                    'lastName': lastName,
+                    'phone': phoneNumber,
+                    'email': email
+                };
+
+                var user = new Parse.User();
+
+                user.signUp(username, password, attrs, {
+                    success: function(user) {
+                        // Success
+                        response.success();
+                    },
+                    error: function(error) {
+                        // Error
+                        response.error('Unable to save user.');
+                    }
+                });
+            }
         }
     });
 });
@@ -52,3 +74,15 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
     if (!request.object.get("email")) response.error("Email is required for signup");
 });
+
+// TO_DO
+Parse.Cloud.define('sendAudio', function(req, res) {
+
+});
+
+// TO_DO
+Parse.Cloud.define('sendPicture', function(req, res) {
+
+});
+
+
