@@ -176,10 +176,6 @@ var findUserById = function(db, id, callback) {
       }
    });
 };
-var findUserByPhonenumber = function(db, phoneNumber, callback) {
-   var user = db.collection("_User").findOne({phoneNumber: phoneNumber});
-   console.log(user);
-};
 
 
 // POST from direct URL
@@ -190,15 +186,23 @@ app.get('/sendHelp', function(req, res) {
 
   //TODO get data fields from body
   var phoneNumber = '';
-  MongoClient.connect(dbUrl, function(err, db) {
-    if(!err) {
-      findUserByPhonenumber(db, phoneNumber, function() {
-          db.close();
+
+  db.collection("_User", function(err, collection) {
+      collection.findOne({"phoneNumber": ''}, function(err, item) {
+          console.log(err);
+          res.send(item);
       });
-    } else {
-      console.log('!!! MongoClient failed!!! ');
-    }
   });
+
+  // MongoClient.connect(dbUrl, function(err, db) {
+  //   if(!err) {
+  //     findUserByPhonenumber(db, phoneNumber, function() {
+  //         db.close();
+  //     });
+  //   } else {
+  //     console.log('!!! MongoClient failed!!! ');
+  //   }
+  // });
 
 
   var loadUser = JSON.parse('{}');
