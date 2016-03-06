@@ -148,17 +148,17 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
   var email = user.email;
   console.log('email', email, 'lat', lat, 'lon', lon);
 
-  query = new Parse.Query("User");
+  query = new Parse.Query("_User");
   query.equalTo('email', email);
   query.find({
     success: function(results) {
-      alert("Successfully retrieved " + results.length + " scores.");
+      console.log("Successfully retrieved " + results.length + " scores.");
       // Do something with the returned Parse.Object values
-      console.log(results);
+      console.log('results', results);
     },
     error: function(error) {
       console.log(error);
-      alert("Error: " + error.code + " " + error.message);
+      console.log("Error: " + error.code + " " + error.message);
     }
   });
 });
