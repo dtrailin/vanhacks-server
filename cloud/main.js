@@ -140,8 +140,23 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 });
 
 Parse.Cloud.afterSave('HelpEvent',function(request) {
+  query = new Parse.Query('User');
+  query.equalTo('email', 'absb@gmail.com');
+  query.find({
+    success: function(results) {
+      alert("Successfully retrieved " + results.length + " scores.");
+      // Do something with the returned Parse.Object values
+      console.log(results);
+    },
+    error: function(error) {
+      console.log(error);
+      alert("Error: " + error.code + " " + error.message);
+  });
+
   console.log('afterSave HelpEvent being called');
-  console.log(request.body);
+  console.log(request);
+  console.log(JSON.stringify(request));
+
   // query = new Parse.Query('User');
   // query.get(request.body('user').id, {
   //   success: function(user) {
