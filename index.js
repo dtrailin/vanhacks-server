@@ -119,7 +119,7 @@ app.post('/message/in', function(req, res) {
      twilio.messages.create({
        body: 'Message received! :D',
        to: String(fromNum),
-       from: serviceNum,
+       from: serviceNum
      }, function(err, message) {
        if(err){
          responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and create message\n' + req.body);
