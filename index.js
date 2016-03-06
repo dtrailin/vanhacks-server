@@ -76,22 +76,6 @@ var twilio = require('twilio')(accountSid, authToken);
 var serviceNum = '+16042391416';
 var securityNum = '+16479953366';
 
-function sendMessage(toNum, fromNum, body) {
-  console.log('Twilio: sending message to ' + toNum + ' from ' + fromNum);
-  twilio.messages.create({
-      body: body,
-      to: toNum,
-      from: fromNum
-  }, function(err, message) {
-    if(err) {
-      errorHandler(JSON.stringify(err));
-      return false;
-    } else {
-      return true;
-    }
-  });
-}
-
 // POST from Twilio
 // @param text message sent to serviceNumber +16042391416
 // @return text back
@@ -101,19 +85,26 @@ app.post('/message/in', function(req, res) {
    if(String(req.body.To) === serviceNum || true) {
      var sId = req.body.SmsMessageSid,
          message = req.body.Body,
-         fromNum = req.body.From;
+         fromNum = String(req.body.From);
 
-     responseLogger(SUCCESS, 'Twilio received message');
+     responseLogger(SUCCESS, 'Twilio received message sending message to ' + serviceNumber + ' from ' + fromNum);
 
      // TODO check database for user, and send info to security
 
-     if(sendMessage(String(fromNum), serviceNum, 'Message received! :D')) {
-       responseLogger(SUCCESS, 'Twilio response and created message');
-       res.status(SUCCESS).send('Twilio client: responded to message');
-     } else {
-       responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and did not create message\n' + JSON.stringify(req.body));
-       res.status(UNKNOWN_CLIENT_ERROR);
-     }
+     var body = 'Message received! :D';
+     twilio.messages.create({
+         body: body,
+         to: fromNum,
+         from: serviceNumber
+     }, function(err, message) {
+       if(err) {
+         responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and did not create message\n' + JSON.stringify(req.body));
+         res.status(UNKNOWN_CLIENT_ERROR);
+       } else {
+         responseLogger(SUCCESS, 'Twilio response and created message');
+         res.status(SUCCESS).send('Twilio client: responded to message');
+       }
+     });
    } else {
      responseLogger(BADREQUEST, 'Twilio receive message');
      res.status(BADREQUEST);
