@@ -83,14 +83,8 @@ function sendMessage(to, from, body) {
       to: securityNum,
       from: serviceNum
   }, function(err, message) {
-    if(err){
-      responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and create message\n' + req.body);
-      errorHandler(JSON.stringify(err));
-      res.send(UNKNOWN_CLIENT_ERROR);
-    } else {
-      responseLogger(SUCCESS, 'Twilio response and create message');
-      res.status(SUCCESS).send('Twilio client: responding to message');
-    }
+    if(err) return false;
+    else return true;
   });
 };
 
@@ -109,7 +103,14 @@ app.post('/message/in', function(req, res) {
 
      // TODO check database for user, and send info to security
 
-     sendMessage(serviceNum, String(fromNum), 'Message received! :D');
+     if(sendMessage(serviceNum, String(fromNum), 'Message received! :D')){
+       responseLogger(SUCCESS, 'Twilio response and create message');
+       res.status(SUCCESS).send('Twilio client: responding to message');
+     } else {
+       responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and create message\n' + req.body);
+       errorHandler(JSON.stringify(err));
+       res.send(UNKNOWN_CLIENT_ERROR);
+     }
    } else {
      responseLogger(BADREQUEST, 'Twilio receive message');
    }
