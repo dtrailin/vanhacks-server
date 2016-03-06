@@ -184,25 +184,25 @@ app.get('/sendHelp', function(req, res) {
   // });
 
   MongoClient.connect(dbUrl, function (err, db) {
-  if (err) {
-    console.log('Unable to connect to the mongoDB server. Error:', err);
-  } else {
-    //HURRAY!! We are connected. :)
-    console.log('Connection established to', dbUrl);
+    if (err) {
+      console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+      //HURRAY!! We are connected. :)
+      console.log('Connection established to', dbUrl);
 
-    var collection = db.collection('_User');
-    var query = { phoneNumber: phoneNum };
-    collection.findOne(query, function(err, item) {
-      if(err){
-        console.log('Query error ', err);
-      } else {
-        console.log('Queried by phoneNumber ', JSON.stringify(item));
-      }
-    });
-    //Close connection
-    db.close();
-  }
-});
+      var collection = db.collection('_User');
+      var query = { phoneNumber: phoneNum };
+      collection.findOne(query, function(err, item) {
+        if(err){
+          console.log('Query error ', err);
+        } else {
+          console.log('Queried by phoneNumber ', JSON.stringify(item));
+        }
+        //Close connection
+        db.close();
+      });
+    }
+  });
 
   var loadUser = JSON.parse('{}');
 
