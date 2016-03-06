@@ -1,8 +1,8 @@
 // console.log(JSON.stringify(yourObject)); To print out out objects
 Parse.Cloud.define('submitForm', function(request, response) {
-    var firstName = request.params.firstName;
-    var lastName = request.params.lastName;
-    var phoneNumber = request.params.phoneNumber;
+    // var firstName = request.params.firstName;
+    // var lastName = request.params.lastName;
+    var phone = request.params.phone;
     var username = request.params.username;
     var password = request.params.password;
     var email = request.params.email;
@@ -17,7 +17,7 @@ Parse.Cloud.define('submitForm', function(request, response) {
                 // User already exists
                 // user.set('firstName', firstName);
                 // user.set('lastName', lastName);
-                user.set('phoneNumber', phoneNumber);
+                user.set('phone', phone);
                 user.set('username', username);
                 user.set('email', email);
                 user.save(null, {
@@ -33,7 +33,7 @@ Parse.Cloud.define('submitForm', function(request, response) {
                 var attrs = {
                     // 'firstName': firstName,
                     // 'lastName': lastName,
-                    'phone': phoneNumber,
+                    'phone': phone,
                     'email': email
                 };
 
@@ -55,20 +55,20 @@ Parse.Cloud.define('submitForm', function(request, response) {
 });
 
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
-    var firstName = request.object.get('firstName');
-    var lastName = request.object.get('lastName');
-    var phoneNumber = request.object.get('phoneNumber');
+    // var firstName = request.object.get('firstName');
+    // var lastName = request.object.get('lastName');
+    var phone = request.object.get('phone');
     var username = request.object.get('username');
     var password = request.object.get('password');
     var email = request.object.get('email');
 
-    var isNum = /^\d+$/.test(phoneNumber);
+    var isNum = /^\d+$/.test(phone);
 
     // if (!firstName || !lastName) response.error('Please enter both first and last name.');
 
     // if (!firstName.match(/[a-z]/i) || !lastName.match(/[a-z]/i)) response.error('Please enter a valid first and last name.');
 
-    // if (!isNum || phoneNumber.length !== 10) response.error('Please enter a valid phone number.');
+    // if (!isNum || phone.length !== 10) response.error('Please enter a valid phone number.');
 
     // if (!userName) response.error('Please enter a valid user name');
 
