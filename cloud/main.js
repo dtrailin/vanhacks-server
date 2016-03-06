@@ -20,7 +20,7 @@ Parse.Cloud.define('submitForm', function(request, response) {
                 user.set('phoneNumber', phoneNumber);
                 user.set('username', username);
                 user.set('email', email);
-                user.save(null. {
+                user.save(null, {
                     success: function(user) {
                         response.success();
                     },
