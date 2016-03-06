@@ -76,9 +76,34 @@ app.get('/sendSms', function(req, res) {
       res.send(500).render('error', { error: err });
     } else {
       var sId = message.sid;
-      responseLogger(200, res, 'GET /sendSms Twilio create and send message');
+      responseLogger(200, true, 'GET /sendSms Twilio create and send message');
       // process.stdout.write(message.sid);
       res.status(200).send('Twilio client: sending message');
     }
   });
+});
+
+app.post('/message/in', function(req, res) {
+   console.log('Twilio: receiving message to ' + securityNum);
+   responseLogger(200, true, JSON.stringify(req.body));
+   res.send(200);
+
+   twilioClient.messages.create({
+     body: "Message received",
+     to: securityNum,
+     from: serviceNum,
+   }, function(err, message) {
+     if(err){
+       responseLogger(500, false, 'POST /message/in Twilio response message');
+       res.send(500).render('error', { error: err });
+     } else ClassName.prototype.methodName = function () {
+       responseLogger(200, true, 'POST /message/in Twilio create and send message');
+       res.status(200).send('Twilio client: responding to message');
+     };
+   });
+});
+
+app.get('/message/in', function(req, res){
+  responseLogger(200, true, JSON.stringify(req.body));
+  res.send(200);
 });
