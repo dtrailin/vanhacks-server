@@ -139,10 +139,9 @@ app.post('/message/in', function(req, res) {
     // TODO parse message for home and current location, then send data to security
 
     try {
-      var securityMessage = 'Help needed!!';
 
       dbUserQuery({ email: email }, function(user) {
-        console.log(user);
+        var securityMessage = 'Help needed for ' + user.firstName + ' ' + user.lastName + '!!!';
         twilio.messages.create({
           body: securityMessage,
           to: securityNum,
