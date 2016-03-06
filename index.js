@@ -97,13 +97,13 @@ app.get('/message/out', function(req, res) {
 app.post('/message/in', function(req, res) {
    console.log('Twilio: receiving message to ' + serviceNum + '\n' + req);
 
-   if(twilioClient.validateExpressRequest(req, authToken){
-     var resp = new twilioClient.TwimlResponse();
+   if (twilio.validateExpressRequest(req, 'YOUR_TWILIO_AUTH_TOKEN')) {
+         var resp = new twilio.TwimlResponse();
+         resp.say('yayayayayayaya ');
 
-     resp.say('yay express and twilio');
-     res.type('text/xml');
-     res.send(resp.toString());
-   });
+         res.type('text/xml');
+         res.send(resp.toString());
+     }
 
    var req = '';
    req += 'req ' + req;
