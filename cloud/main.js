@@ -55,34 +55,82 @@ Parse.Cloud.define('submitForm', function(request, response) {
 });
 
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
-    // var firstName = request.object.get('firstName');
-    // var lastName = request.object.get('lastName');
-    var phone = request.object.get('phone');
+    var firstName = request.object.get('firstName');
+    var lastName = request.object.get('lastName');
+    var birthDate = request.object.get('birthDate'); 
+    var mobilePhone = request.object.get('mobilePhone');
+    var workPhone = request.object.get('workPhone');
     var username = request.object.get('username');
     var password = request.object.get('password');
     var email = request.object.get('email');
+    var height = request.object.get('height');
+    var weight = request.object.get('weight');
+    var workAddress = request.object.get('workAddress');
+    var homeAddress = request.object.get('homeAddress');
+    var licensePlate = request.object.get('licensePlate');
 
-    var isNum = /^\d+$/.test(phone);
+    var firstNamePartner = request.object.get('firstNamePartner');
+    var lastNamePartner = request.object.get('lastNamePartner');
+    var birthDatePartner = request.object.get('birthDatePartner'); 
+    var mobilePhonePartner = request.object.get('mobilePhonePartner');
+    var workPhonePartner = request.object.get('workPhonePartner');
+    var usernamePartner = request.object.get('usernamePartner');
+    var passwordPartner = request.object.get('passwordPartner');
+    var emailPartner = request.object.get('emailPartner');
+    var heightPartner = request.object.get('heightPartner');
+    var weightPartner = request.object.get('weightPartner');
+    var workAddressPartner = request.object.get('workAddressPartner');
+    var homeAddressPartner = request.object.get('homeAddressPartner');
+    var licensePlatePartner = request.object.get('licensePlatePartner');
 
-    // if (!firstName || !lastName) response.error('Please enter both first and last name.');
+    validateName(firstName, lastName);
+    validateName(firstNamePartner, lastNamePartner);
+    validatePhone(workPhone);
+    validatePhone(workPhonePartner);
+    validatePhone(mobilePhone);
+    validatePhone(mobilePhonePartner);
+    validateUsername(username);
+    validateUsername(usernamePartner);
+    validatePassword(password);
+    validatePassword(passwordPartner);
+    validateEmail(email);
+    validateEmail(emailPartner);
+    validateAddress(workAddress);
+    validateAddress(workAddressPartner);
+    validateAddress(homeAddress);
+    validateAddress(homeAddressParnter);
+    validateLicensePlate(licensePlate);
+    validateLicensePlate(licensePlatePartner);
 
-    // if (!firstName.match(/[a-z]/i) || !lastName.match(/[a-z]/i)) response.error('Please enter a valid first and last name.');
+    // TODO - validate birthday, height, weight
 
-    // if (!isNum || phone.length !== 10) response.error('Please enter a valid phone number.');
+    var validateName = function(firstName, lastName) {
+        if (!firstName || !lastName) return response.error('Please enter both first and last name.');
+        if (!firstName.match(/[a-z]/i) || !lastName.match(/[a-z]/i)) return response.error('Please enter a valid first and last name.');
+    }
 
-    // if (!userName) response.error('Please enter a valid user name');
+    var validatePhone = function(phone) {
+        var isNum = /^\d+$/.test(phone);
+        if (!isNum || phone.length !== 10) return response.error('Please enter a valid phone number.');
+    }
 
-    // if (!request.object.get("email")) response.error("Email is required for signup");
+    var validateUsername = function(userName) {
+        if (!userName) return response.error('Please enter a valid user name');
+    }
+
+    var validatePassword = function(password) {
+        if (!password) return response.error('Please enter a valid password');
+    }
+
+    var validateEmail = function(email) {
+        if (!email) return response.error('Please enter a valid email');
+    }
+
+    var validateAddress = function(address) {
+        if (!address) return response.error('Please enter a valid address');
+    }
+
+    var validateLicensePlate = function(licensePlate) {
+        if (!licensePlate) return response.error('Please enter a valid license plate');
+    }
 });
-
-// TO_DO
-Parse.Cloud.define('sendAudio', function(req, res) {
-
-});
-
-// TO_DO
-Parse.Cloud.define('sendPicture', function(req, res) {
-
-});
-
-
