@@ -8,11 +8,7 @@ var BADREQUEST = 400;
 var NOTFOUND = 404;
 var UNKNOWN_CLIENT_ERROR = 500;
 
-// Basic Functiosn
-function responseLogger(status, message) {
-  console.log(status + ' - ' + message);
-}
-
+// Basic Functions
 function isEmpty(arr) {
   return JSON.stringify(arr) === JSON.stringify({}) ? true : false;
 }
@@ -65,7 +61,6 @@ app.listen(port, function() {
 //     response.on("end", function (err) {
 //         // finished transferring data
 //         // dump the raw data
-//         responseLogger(100, buffer);
 //         data = JSON.parse(buffer);
 //     });
 // });
@@ -73,19 +68,19 @@ app.listen(port, function() {
 // VanHacks project
 // Endpoints
 app.get('/', function(req, res) {
-  responseLogger(SUCCESS, 'Calling VanHacks service');
+  console.log(SUCCESS, 'Calling VanHacks service');
   res.success();
 });
 
 app.get('/info', function(req, res) {
   console.log(req.method + ' ' + req.url + ' Getting Info');
   var description =
-  'VanHacks Project \n\
+  '\nVanHacks Project \n\
   Targeted Non-Profit Organization: Ending Violence Association of BC (by way of PeaceGeeks) works to coordinate \
   and support the work of victim-serving and other anti-violence programs in British Columbia. \n\
   Team: Madeleine Chercover, Tammy Liu, Dennis Trailin, Mathew Teoh, Daniel Tsang \n\
   Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
-  responseLogger(SUCCESS, req.method + ' ' + req.url + '\n' + description);
+  console.log(SUCCESS, req.method, req.url, description);
   res.send(200);
 });
 
@@ -110,7 +105,7 @@ app.post('/message/in', function(req, res) {
 
     var message = req.body.Body,
         fromNum = String(req.body.From);
-    responseLogger(SUCCESS, 'Twilio received message to ' + serviceNum + ' from ' + fromNum + ', with SmsSid: ' + req.body.SmsMessageSid);
+    console.log(SUCCESS, 'Twilio received message to', serviceNum, 'from', fromNum, ', with SmsSid:', req.body.SmsMessageSid);
 
     // TODO parse message for home and current location, then send data to security
 
@@ -125,10 +120,10 @@ app.post('/message/in', function(req, res) {
         from: serviceNum
       }, function(err, message) {
         if(err){
-          responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to \n' + JSON.stringify(loadUser));
+          console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to', loadUser);
           res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + fromNum);
         } else {
-          responseLogger(SUCCESS, 'Twilio sent security message from ' + fromNum);
+          console.log(SUCCESS, 'Twilio sent security message from', fromNum);
 
           // Respond to user with bogo message
           var reply = 'Congratulations! You just won an all expenses paid trip to Bucharest, Romania. Please call within 24 hours to claim your prize.';
@@ -138,11 +133,10 @@ app.post('/message/in', function(req, res) {
              from: serviceNum
           }, function(err, message) {
            if(err) {
-             responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio did not reply to user\n' + JSON.stringify(req.body));
-             console.log(err);
+             console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not reply to user\n', req.body, err);
              res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not reply to user');
            } else {
-             responseLogger(SUCCESS, 'Twilio responded to message');
+             console.log(SUCCESS, 'Twilio responded to message');
              res.status(SUCCESS).send('Twilio client: responded to message');
            }
           });
@@ -150,11 +144,11 @@ app.post('/message/in', function(req, res) {
       });
 
     } catch(err) {
-      responseLogger(err, 'VanHacks service failed to retrieve member from database');
+      console.log(err, 'VanHacks service failed to retrieve member from database');
       res.status(err).send('VanHacks service failed to retrieve member from database');
     }
   } catch (err) {
-  responseLogger(err, 'Twilio message receive ERROR');
+  console.log(err, 'Twilio message receive ERROR');
   res.status(err).send('Twilio message receive ERROR');
   }
 });
@@ -165,8 +159,6 @@ var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 var dbUrl = 'mongodb://localhost:27017/dev';
 
-
-
 // POST from direct URL
 // Called from the Android app when there is data
 // @body  { phoneId?, userId }
@@ -175,13 +167,6 @@ app.get('/sendHelp', function(req, res) {
 
   //TODO get data fields from body
   var phoneNum = '';
-
-  // db.collection("_User", function(err, collection) {
-  //     collection.findOne({"phoneNumber": ''}, function(err, item) {
-  //         console.log(err);
-  //         res.send(item);
-  //     });
-  // });
 
   MongoClient.connect(dbUrl, function (err, db) {
     if (err) {
@@ -194,33 +179,34 @@ app.get('/sendHelp', function(req, res) {
       var query = { phoneNumber: phoneNum };
       collection.findOne(query, function(err, item) {
         if(err){
-          console.log('Query error ', err);
+          console.log(500, 'Query error', err);
+          res.status(500).send('Query error');
         } else {
-          console.log('Queried by phoneNumber ', JSON.stringify(item));
+          console.log(200, 'Query successful for', JSON.stringify(item));
         }
         //Close connection
         db.close();
+        res.status(200).send('Query successful');
       });
     }
   });
 
   var loadUser = JSON.parse('{}');
 
-  /* Temporarily send text message to security
+  //Temporarily send text message to security
   var securityMessage = 'A <securityMessage> from an external endpoint';
   twilio.messages.create({
     body: securityMessage,
     to: securityNum,
     from: serviceNum
   }, function(err, message) {
-    if(err){
-      responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to \n' + JSON.stringify(loadUser));
+    if(err) {
+      console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to', loadUser);
       res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + fromNum);
     } else {
-      responseLogger(SUCCESS, 'Twilio sent security message from ' + fromNum);
+      console.log(SUCCESS, 'Twilio sent security message from', fromNum);
     }
   });
-  */
 
 
   res.send(200);
