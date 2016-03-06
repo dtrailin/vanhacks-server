@@ -155,8 +155,11 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
       console.log("Successfully retrieved " + results.length + " scores.");
       // Do something with the returned Parse.Object values
       console.log('results', results);
-      results = JSON.parse(JSON.stringify(results));
+      results = JSON.parse(JSON.stringify(results))[0];
       console.log('json results', results);
+      var firstName = results.firstName;
+      var lastName = results.lastName;
+      console.log(firstName, lastName, 'is in need of help.');
     },
     error: function(error) {
       console.log(error);
