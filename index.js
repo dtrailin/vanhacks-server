@@ -85,6 +85,11 @@ app.get('/info', function(req, res) {
 });
 
 
+// Database
+var mongodb = require('mongodb');
+var MongoClient = mongodb.MongoClient;
+var dbUrl = 'mongodb://localhost:27017/dev';
+
 // Twilio
 var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
 var authToken = '92ea91beabd04e0cfd3fcbff68c8f0ae';
@@ -93,12 +98,35 @@ var twilio = require('twilio')(accountSid, authToken);
 var serviceNum = '+16042391416';
 var securityNum = '+16479953366';
 
+var dbUserQuery = function(queryParams, callback) {
+  MongoClient.connect(dbUrl, function (err, db) {
+    if (err) {
+      console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+      console.log('Connection established to', dbUrl);
+
+      var collection = db.collection('_User');
+      collection.findOne(queryParams, function(err, user) {
+        if(err){
+          console.log(500, 'Query error', err);
+          res.status(500).send('Query error');
+        } else {
+          //Close connection
+          db.close();
+          console.log(200, 'Query successful for', user);
+          callback(user);
+        }
+      });
+    }
+  });
+};
+
 // POST from Twilio
 // @initializer text message sent to serviceNumber +16042391416
 // @req.body { To, From, SmsMessagesid, Body }
 // @return text to security, and back to user
 app.post('/message/in', function(req, res) {
-  console.log(req.method + ' ' + req.url + ' Twilio: receiving message to ' + req.body.To);
+  console.log(req.method, req.url,'Twilio: receiving message to ', req.body.To);
   try {
     if(isEmpty(req.body)) throw BADREQUEST;   //empty body
     if(String(req.body.To) != String(serviceNum)) throw BADREQUEST;   //not send to Twilio number
@@ -153,12 +181,6 @@ app.post('/message/in', function(req, res) {
   }
 });
 
-
-// Database
-var mongodb = require('mongodb');
-var MongoClient = mongodb.MongoClient;
-var dbUrl = 'mongodb://localhost:27017/dev';
-
 // POST from direct URL
 // Called from the Android app when there is data
 // @body  { phoneId?, userId }
@@ -168,46 +190,59 @@ app.get('/sendHelp', function(req, res) {
   //TODO get data fields from body
   var phoneNum = '';
 
-  MongoClient.connect(dbUrl, function (err, db) {
-    if (err) {
-      console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-      //HURRAY!! We are connected. :)
-      console.log('Connection established to', dbUrl);
-
-      var collection = db.collection('_User');
-      var query = { phoneNumber: phoneNum };
-      collection.findOne(query, function(err, item) {
-        if(err){
-          console.log(500, 'Query error', err);
-          res.status(500).send('Query error');
-        } else {
-          console.log(200, 'Query successful for', JSON.stringify(item));
-        }
-        //Close connection
-        db.close();
-        res.status(200).send('Query successful');
-      });
-    }
+  dbUserQuery({ phoneNumber: phoneNum }, function(user) {
+    //TODO temporarily send text message to security
+    var securityMessage = 'A <securityMessage> from an external endpoint';
+    twilio.messages.create({
+      body: securityMessage,
+      to: securityNum,
+      from: serviceNum
+    }, function(err, message) {
+      if(err) {
+        console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to', user);
+        res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from xx' + serviceNum);
+      } else {
+        console.log(SUCCESS, 'Twilio sent security message from', serviceNum);
+      }
+    });
   });
 
-  var loadUser = JSON.parse('{}');
-
-  //Temporarily send text message to security
-  var securityMessage = 'A <securityMessage> from an external endpoint';
-  twilio.messages.create({
-    body: securityMessage,
-    to: securityNum,
-    from: serviceNum
-  }, function(err, message) {
-    if(err) {
-      console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to', loadUser);
-      res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + fromNum);
-    } else {
-      console.log(SUCCESS, 'Twilio sent security message from', fromNum);
-    }
-  });
-
-
-  res.send(200);
+  // MongoClient.connect(dbUrl, function (err, db) {
+  //   if (err) {
+  //     console.log('Unable to connect to the mongoDB server. Error:', err);
+  //   } else {
+  //     console.log('Connection established to', dbUrl);
+  //
+  //     var collection = db.collection('_User');
+  //     // TODO Temporarily query by phoneNumber
+  //     var query = { phoneNumber: phoneNum };
+  //     collection.findOne(query, function(err, item) {
+  //       if(err){
+  //         console.log(500, 'Query error', err);
+  //         res.status(500).send('Query error');
+  //       } else {
+  //         //Close connection
+  //         db.close();
+  //         console.log(200, 'Query successful for', JSON.stringify(item));
+  //
+  //         var loadUser = item;
+  //
+  //         //TODO temporarily send text message to security
+  //         var securityMessage = 'A <securityMessage> from an external endpoint';
+  //         twilio.messages.create({
+  //           body: securityMessage,
+  //           to: securityNum,
+  //           from: serviceNum
+  //         }, function(err, message) {
+  //           if(err) {
+  //             console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to', loadUser);
+  //             res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + serviceNum);
+  //           } else {
+  //             console.log(SUCCESS, 'Twilio sent security message from', serviceNum);
+  //           }
+  //         });
+  //       }
+  //     });
+  //   }
+  // });
 });
