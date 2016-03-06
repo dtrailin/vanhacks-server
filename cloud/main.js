@@ -15,8 +15,8 @@ Parse.Cloud.define('submitForm', function(request, response) {
         success: function(user) {
             if (user) {
                 // User already exists
-                user.set('firstName', firstName);
-                user.set('lastName', lastName);
+                // user.set('firstName', firstName);
+                // user.set('lastName', lastName);
                 user.set('phoneNumber', phoneNumber);
                 user.set('username', username);
                 user.set('email', email);
@@ -31,8 +31,8 @@ Parse.Cloud.define('submitForm', function(request, response) {
             } else {
                 // Create new user
                 var attrs = {
-                    'firstName': firstName,
-                    'lastName': lastName,
+                    // 'firstName': firstName,
+                    // 'lastName': lastName,
                     'phone': phoneNumber,
                     'email': email
                 };
@@ -64,15 +64,15 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
     var isNum = /^\d+$/.test(phoneNumber);
 
-    if (!firstName || !lastName) response.error('Please enter both first and last name.');
+    // if (!firstName || !lastName) response.error('Please enter both first and last name.');
 
-    if (!firstName.match(/[a-z]/i) || !lastName.match(/[a-z]/i)) response.error('Please enter a valid first and last name.');
+    // if (!firstName.match(/[a-z]/i) || !lastName.match(/[a-z]/i)) response.error('Please enter a valid first and last name.');
 
-    if (!isNum || phoneNumber.length !== 10) response.error('Please enter a valid phone number.');
+    // if (!isNum || phoneNumber.length !== 10) response.error('Please enter a valid phone number.');
 
-    if (!userName) response.error('Please enter a valid user name');
+    // if (!userName) response.error('Please enter a valid user name');
 
-    if (!request.object.get("email")) response.error("Email is required for signup");
+    // if (!request.object.get("email")) response.error("Email is required for signup");
 });
 
 // TO_DO
