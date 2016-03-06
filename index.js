@@ -3,6 +3,10 @@ var bodyParser = require('body-parser');
 var ParseServer = require('parse-server').ParseServer;
 var http = require('http');
 
+// Database
+var MongoClient = require('mongodb').MongoClient;
+var dbUrl = 'mongodb://localhost:27017/test';
+
 var SUCCESS = 200;
 var BADREQUEST = 400;
 var NOTFOUND = 404;
@@ -85,8 +89,8 @@ app.get('/info', function(req, res) {
   and support the work of victim-serving and other anti-violence programs in British Columbia. \n\
   Team: Madeleine Chercover, Tammy Liu, Dennis Trailin, Mathew Teoh, Daniel Tsang \n\
   Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
-  responseLogger(SUCCESS, true, req.method + ' ' + req.url + '\n' + description);
-  res.success();
+  responseLogger(SUCCESS, req.method + ' ' + req.url + '\n' + description);
+  res.send(200);
 });
 
 
@@ -100,6 +104,7 @@ var securityNum = '+16479953366';
 
 // POST from Twilio
 // @initializer text message sent to serviceNumber +16042391416
+// @req.body { To, From, SmsMessagesid, Body }
 // @return text to security, and back to user
 app.post('/message/in', function(req, res) {
   console.log(req.method + ' ' + req.url + ' Twilio: receiving message to ' + req.body.To);
@@ -157,11 +162,71 @@ app.post('/message/in', function(req, res) {
   }
 });
 
+
+// WIP get data from database
+var findUserById = function(db, id, callback) {
+   var cursor = db.collection("_User").findOne({_id: id});
+   cursor.each(function(err, doc) {
+      if(!err) {
+        if (doc != null) {
+           console.dir(doc);
+        } else {
+           console.log('doc is null');
+        }
+      }
+   });
+};
+var findUserByPhonenumber = function(db, phoneNumber, callback) {
+   var cursor = db.collection("_User").findOne({phoneNumber: phoneNumber});
+   cursor.each(function(err, doc) {
+      if(!err) {
+        if (doc != null) {
+           console.dir(doc);
+        } else {
+           callback();
+        }
+      }
+   });
+};
+
+
 // POST from direct URL
-// @param
-app.post('/sendHelp', function(req, res) {
+// Called from the Android app when there is data
+// @body  { phoneId?, userId }
+app.get('/sendHelp', function(req, res) {
   console.log(req.method + ' ' + req.url + ' VanHacks service: receiving data externally');
 
   //TODO get data fields from body
-  res.success();
+  var phoneNumber = '';
+  MongoClient.connect(dbUrl, function(err, db) {
+    if(!err) {
+      findUserByPhonenumber(db, phoneNumber, function() {
+          db.close();
+      });
+    } else {
+      console.log('!!! MongoClient failed!!! ');
+    }
+  });
+
+
+  var loadUser = JSON.parse('{}');
+
+  /* Temporarily send text message to security
+  var securityMessage = 'A <securityMessage> from an external endpoint';
+  twilio.messages.create({
+    body: securityMessage,
+    to: securityNum,
+    from: serviceNum
+  }, function(err, message) {
+    if(err){
+      responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to \n' + JSON.stringify(loadUser));
+      res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + fromNum);
+    } else {
+      responseLogger(SUCCESS, 'Twilio sent security message from ' + fromNum);
+    }
+  });
+  */
+
+
+  res.send(200);
 });
