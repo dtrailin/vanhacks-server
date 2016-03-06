@@ -21,7 +21,8 @@
     "kerberos": "~0.0.x",
     "parse": "~1.6.12",
     "parse-server": "~2.1.2",
-    "twilio": "~2.9.x"
+    "twilio": "~2.9.x",
+    "body-parser": "~1.15.x"
   },
   "scripts": {
     "start": "node index.js"

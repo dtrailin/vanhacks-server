@@ -88,11 +88,22 @@ app.get('/message/out', function(req, res) {
   });
 });
 
+// Post new incoming message to service
 app.post('/message/in', function(req, res) {
    console.log('Twilio: receiving message to ' + serviceNum + '\n' + req);
-   console.log(req.url);
-   console.log(req.rawBody);
-   console.log(req.query);
+   var req = '';
+   req += 'req ' + req;
+   req += '\nrawBody ' + req.rawBody;
+   req += '\nquery ' + req.query;
+   req += '\nparams ' + req.params;
+   req += '\nurl ' + req.url;
+   req += '\nURL ' + req.URL;
+   console.log(body);
+
+   var request = '\n Body ' + req.Body;
+   request += '\n From ' + req.From;
+   console.log(request);
+
     // twilioClient.messages.create({
     //   body: "Message received!! :D yayay",
     //   to: securityNum,
