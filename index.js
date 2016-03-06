@@ -1,10 +1,6 @@
 var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 
-var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
-var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
-var twilioClient = require('twilio')(accountSid, authToken);
-
 var databaseUri = process.env.DATABASE_URI || process.env.MONGOLAB_URI;
 if (!databaseUri) {
   console.log('DATABASE_URI not specified, falling back to localhost.');
@@ -34,8 +30,16 @@ app.listen(port, function() {
   console.log('VanHacks project running on port ' + port + '.');
 });
 
+
+// Endpoints
+
+function responseLogger(status, success, message) {
+  var message = success ? message + ' SUCCESS' : message + ' ERROR';
+  console.log(status + ' - ' + message);
+}
+
 app.get('/', function(req, res) {
-  console.log('Calling VanHacks service');
+  logger(200, true, '/ Calling VanHacks service')
   res.status(200);
 });
 
@@ -46,17 +50,35 @@ app.get('/info', function(req, res) {
   and support the work of victim-serving and other anti-violence programs in British Columbia. \n\
   Team: Madeleine Chercover, Tammy Liu, Dennis Trailin, Mathew Teoh, Daniel Tsang \n\
   Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
-  console.log('GET /info' + '\n' + description);
-  res.status(200).send('VanHacks Spidermans-webdevs service is up');
+  responseLogger(200, true, 'GET /info' + '\n' + description);
+  res.send(200);
 });
 
+
+// Twilio
+
+var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
+var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
+var twilioClient = require('twilio')(accountSid, authToken);
+
+var serviceNum = "+16042391416";
+var securityNum = "+16479953366";
+
 app.get('/sendSms', function(req, res) {
+  console.log('Twilio: sending message to ' + securityNum);
   twilioClient.messages.create({
-      body: "Testing VanHacks twilio service :)",
-      to: "+16479953366",
-      from: "+16042391416"
+      body: "Calling VanHacks security system !!",
+      to: securityNum,
+      from: serviceNum
   }, function(err, message) {
-      process.stdout.write(message.sid);
+    if(err){
+      responseLogger(500, false, 'GET /sendSms Twilio create and send message');
+      res.send(500).render('error', { error: err });
+    } else {
+      var sId = message.sid;
+      responseLogger(200, res, 'GET /sendSms Twilio create and send message');
+      // process.stdout.write(message.sid);
+      res.status(200).send('Twilio client: sending message');
+    }
   });
-  res.status(200).send('Sending message from twilio....');
 });
