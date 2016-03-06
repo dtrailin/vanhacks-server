@@ -133,6 +133,8 @@ app.post('/message/in', function(req, res) {
 
     var message = req.body.Body,
         fromNum = String(req.body.From);
+    var email = JSON.parse(message).email;
+    console.log('E M A I L', email);
     console.log(SUCCESS, 'Twilio received message to', serviceNum, 'from', fromNum, ', with SmsSid:', req.body.SmsMessageSid);
 
     // TODO parse message for home and current location, then send data to security
@@ -140,36 +142,38 @@ app.post('/message/in', function(req, res) {
     try {
       // TODO query by phone number, and populate user data from database
       var loadUser = JSON.parse('{}'); // WIP, load from database
-      var securityMessage = '<Insert security message>';
+      var securityMessage = 'Help needed!!';
 
-      twilio.messages.create({
-        body: securityMessage,
-        to: securityNum,
-        from: serviceNum
-      }, function(err, message) {
-        if(err){
-          console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to', loadUser);
-          res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + fromNum);
-        } else {
-          console.log(SUCCESS, 'Twilio sent security message from', fromNum);
+      // dbUserQuery({ email: email }, function(user) {
+        twilio.messages.create({
+          body: securityMessage,
+          to: securityNum,
+          from: serviceNum
+        }, function(err, message) {
+          if(err){
+            console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not send security message to', loadUser);
+            res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from ' + fromNum);
+          } else {
+            console.log(SUCCESS, 'Twilio sent security message from', fromNum);
 
-          // Respond to user with bogo message
-          var reply = 'Congratulations! You just won an all expenses paid trip to Bucharest, Romania. Please call within 24 hours to claim your prize.';
-          twilio.messages.create({
-             body: reply,
-             to: fromNum,
-             from: serviceNum
-          }, function(err, message) {
-           if(err) {
-             console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not reply to user\n', req.body, err);
-             res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not reply to user');
-           } else {
-             console.log(SUCCESS, 'Twilio responded to message');
-             res.status(SUCCESS).send('Twilio client: responded to message');
-           }
-          });
-        }
-      });
+            // Respond to user with bogo message
+            var reply = 'Congratulations! You just won an all expenses paid trip to Bucharest, Romania. Please call within 24 hours to claim your prize.';
+            twilio.messages.create({
+               body: reply,
+               to: fromNum,
+               from: serviceNum
+            }, function(err, message) {
+             if(err) {
+               console.log(UNKNOWN_CLIENT_ERROR, 'Twilio did not reply to user\n', req.body, err);
+               res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not reply to user');
+             } else {
+               console.log(SUCCESS, 'Twilio responded to message');
+               res.status(SUCCESS).send('Twilio client: responded to message');
+             }
+            });
+          }
+        });
+      // });
 
     } catch(err) {
       console.log(err, 'VanHacks service failed to retrieve member from database');
