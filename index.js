@@ -3,10 +3,6 @@ var bodyParser = require('body-parser');
 var ParseServer = require('parse-server').ParseServer;
 var http = require('http');
 
-// Database
-var db = require('mongodb');
-var dbUrl = 'mongodb://localhost:27017/test';
-
 var SUCCESS = 200;
 var BADREQUEST = 400;
 var NOTFOUND = 404;
@@ -163,47 +159,49 @@ app.post('/message/in', function(req, res) {
 });
 
 
-// WIP get data from database
-var findUserById = function(db, id, callback) {
-   var cursor = db.collection("_User").findOne({_id: id});
-   cursor.each(function(err, doc) {
-      if(!err) {
-        if (doc != null) {
-           console.dir(doc);
-        } else {
-           console.log('doc is null');
-        }
-      }
-   });
-};
+// Database
+var mongodb = require('mongodb');
+var MongoClient = mongodb.MongoClient;
+var dbUrl = 'mongodb://localhost:27017/dev';
+
 
 
 // POST from direct URL
 // Called from the Android app when there is data
 // @body  { phoneId?, userId }
 app.get('/sendHelp', function(req, res) {
-  console.log(req.method + ' ' + req.url + ' VanHacks service: receiving data externally');
+  console.log(req.method, req.url, 'VanHacks service: receiving data externally');
 
   //TODO get data fields from body
-  var phoneNumber = '';
+  var phoneNum = '';
 
-  db.collection("_User", function(err, collection) {
-      collection.findOne({"phoneNumber": ''}, function(err, item) {
-          console.log(err);
-          res.send(item);
-      });
-  });
-
-  // MongoClient.connect(dbUrl, function(err, db) {
-  //   if(!err) {
-  //     findUserByPhonenumber(db, phoneNumber, function() {
-  //         db.close();
+  // db.collection("_User", function(err, collection) {
+  //     collection.findOne({"phoneNumber": ''}, function(err, item) {
+  //         console.log(err);
+  //         res.send(item);
   //     });
-  //   } else {
-  //     console.log('!!! MongoClient failed!!! ');
-  //   }
   // });
 
+  MongoClient.connect(dbUrl, function (err, db) {
+  if (err) {
+    console.log('Unable to connect to the mongoDB server. Error:', err);
+  } else {
+    //HURRAY!! We are connected. :)
+    console.log('Connection established to', dbUrl);
+
+    var collection = db.collection("_User");
+    var query = { phoneNumber: phoneNum };
+    collection.findOne(query, function(err, item) {
+      if(err){
+        console.log('Query error ', err);
+      } else {
+        console.log('Queried by phoneNumber ', JSON.stringify(item));
+      }
+    });
+    //Close connection
+    db.close();
+  }
+});
 
   var loadUser = JSON.parse('{}');
 
