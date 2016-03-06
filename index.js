@@ -134,17 +134,15 @@ app.post('/message/in', function(req, res) {
     var message = req.body.Body,
         fromNum = String(req.body.From);
     var email = JSON.parse(message).email;
-    console.log('E M A I L', email);
     console.log(SUCCESS, 'Twilio received message to', serviceNum, 'from', fromNum, ', with SmsSid:', req.body.SmsMessageSid);
 
     // TODO parse message for home and current location, then send data to security
 
     try {
-      // TODO query by phone number, and populate user data from database
-      var loadUser = JSON.parse('{}'); // WIP, load from database
       var securityMessage = 'Help needed!!';
 
-      // dbUserQuery({ email: email }, function(user) {
+      dbUserQuery({ email: email }, function(user) {
+        console.log(user);
         twilio.messages.create({
           body: securityMessage,
           to: securityNum,
@@ -173,7 +171,7 @@ app.post('/message/in', function(req, res) {
             });
           }
         });
-      // });
+      });
 
     } catch(err) {
       console.log(err, 'VanHacks service failed to retrieve member from database');
