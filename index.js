@@ -76,19 +76,21 @@ var twilio = require('twilio')(accountSid, authToken);
 var serviceNum = '+16042391416';
 var securityNum = '+16479953366';
 
-function sendMessage(to, from, body) {
-  console.log('Twilio: sending message to ' + to + ' from ' + from);
+function sendMessage(toNum, fromNum, body) {
+  console.log('Twilio: sending message to ' + to + ' from ' + fromNum);
   twilio.messages.create({
       body: body,
-      to: securityNum,
-      from: serviceNum
+      to: toNum,
+      from: fromNum
   }, function(err, message) {
     if(err) {
       errorHandler(JSON.stringify(err));
       return false;
-    } else return true;
+    } else {
+      return true;
+    }
   });
-};
+}
 
 // POST from Twilio
 // @param text message sent to serviceNumber +16042391416
@@ -101,19 +103,20 @@ app.post('/message/in', function(req, res) {
          message = req.body.Body,
          fromNum = req.body.From;
 
-     responseLogger(SUCCESS, 'Twilio receive message');
+     responseLogger(SUCCESS, 'Twilio received message');
 
      // TODO check database for user, and send info to security
 
-     if(sendMessage(serviceNum, String(fromNum), 'Message received! :D')){
-       responseLogger(SUCCESS, 'Twilio response and create message');
-       res.status(SUCCESS).send('Twilio client: responding to message');
+     if(sendMessage(String(fromNum), serviceNum, 'Message received! :D')) {
+       responseLogger(SUCCESS, 'Twilio response and created message');
+       res.status(SUCCESS).send('Twilio client: responded to message');
      } else {
-       responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and create message\n' + req.body);
+       responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and did not create message\n' + JSON.stringify(req.body));
        res.status(UNKNOWN_CLIENT_ERROR);
      }
    } else {
      responseLogger(BADREQUEST, 'Twilio receive message');
+     res.status(BADREQUEST);
    }
 });
 
