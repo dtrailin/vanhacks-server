@@ -82,7 +82,7 @@ app.get('/message/out', function(req, res) {
       res.send(500).render('error', { error: err });
     } else {
       var sId = message.sid;
-      responseLogger(200, true, 'GET /message/out Twilio create and send message');
+      responseLogger(200, true, 'GET /message/out Twilio create and send message\n' + message);
       // process.stdout.write(message.sid);
       res.status(200).send('Twilio client: sending message');
     }
