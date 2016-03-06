@@ -16,7 +16,7 @@ Parse.Cloud.define('submitForm', function(request, response) {
     var attrs = {
         'firstName': firstName,
         'lastName': lastName,
-        'phoneNumber': phoneNumber,
+        'phone': phoneNumber,
         'email': email
     }
 
@@ -50,5 +50,5 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
     if (!userName) response.error('Please enter a valid user name');
 
-    if (!request.object.get("email")) response.error("email is required for signup");
+    if (!request.object.get("email")) response.error("Email is required for signup");
 });
