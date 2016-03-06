@@ -95,14 +95,9 @@ app.get('/message/out', function(req, res) {
 
 // Post new incoming message to service
 app.post('/message/in', function(req, res) {
-   console.log('Twilio: receiving message to ' + serviceNum + '\n' + req);
-   
-   var request = '';
-   request += '\nquery ' + JSON.stringify(req.query);
-   request += '\nparams ' + JSON.stringify(req.params);
-   request += '\nurl ' + req.url;
-   request += '\nheaders ' + JSON.stringify(req.headers);
-   console.log(request);
+   console.log('Twilio: receiving message to ' + serviceNum);
+
+   console.log(req.body);
 
     // twilio.messages.create({
     //   body: "Message received!! :D yayay",
