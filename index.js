@@ -2,6 +2,12 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var ParseServer = require('parse-server').ParseServer;
 
+var SUCCESS = 200;
+var BADREQUEST = 400;
+var NOTFOUND = 404;
+var UNKNOWN_CLIENT_ERROR = 500;
+
+
 var databaseUri = process.env.DATABASE_URI || process.env.MONGOLAB_URI;
 if (!databaseUri) {
   console.log('DATABASE_URI not specified, falling back to localhost.');
@@ -37,8 +43,7 @@ app.listen(port, function() {
 
 
 // Endpoints
-function responseLogger(status, success, message) {
-  var message = success ? message + ' SUCCESS' : message + ' ERROR';
+function responseLogger(status, message) {
   console.log(status + ' - ' + message);
 }
 function errorHandler(error) {
@@ -46,19 +51,20 @@ function errorHandler(error) {
 }
 
 app.get('/', function(req, res) {
-  logger(200, true, '/ Calling VanHacks service')
-  res.status(200);
+  responseLogger(SUCCESS, 'Calling VanHacks service')
+  res.status(SUCCESS);
 });
 
 app.get('/info', function(req, res) {
+  console.log(req.method + ' ' + req.url + 'Getting Info');
   var description =
-  'VanHacks Project \n\
+  '\nVanHacks Project \n\
   Targeted Non-Profit Organization: Ending Violence Association of BC (by way of PeaceGeeks) works to coordinate \
   and support the work of victim-serving and other anti-violence programs in British Columbia. \n\
   Team: Madeleine Chercover, Tammy Liu, Dennis Trailin, Mathew Teoh, Daniel Tsang \n\
   Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
-  responseLogger(200, true, req.method + ' ' + req.url + '\n' + description);
-  res.send(200);
+  responseLogger(SUCCESS, true, req.method + ' ' + req.url + '\n' + description);
+  res.send(SUCCESS);
 });
 
 // Twilio
@@ -71,41 +77,41 @@ var serviceNum = '+16042391416';
 var securityNum = '+16479953366';
 
 app.post('/log', function(req, res) {
-  requestLogger(200, true, req.body);
-  res.send(200);
+  responseLogger(SUCCESS, req.body);
+  res.send(SUCCESS);
 });
 
 app.get('/message/out', function(req, res) {
-  console.log('Twilio: sending message to ' + securityNum);
+  console.log(req.method + ' ' + req.url + 'Twilio: sending message to ' + securityNum);
   twilio.messages.create({
       body: 'Sent message from VanHacks server',
       to: securityNum,
       from: serviceNum
   }, function(err, message) {
     if(err){
-      responseLogger(500, false, req.method + ' ' + req.url + ' Twilio create and send message');
+      responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio create and send message');
       errorHandler(err);
-      res.send(500).render('error', { error: err });
+      res.send(UNKNOWN_CLIENT_ERROR).render('error', { error: err });
     } else {
       var sId = message.sid;
-      responseLogger(200, true, req.method + ' ' + req.url + ' Twilio create and send message');
-      res.status(200).send('Twilio client: sending message');
+      responseLogger(SUCCESS, 'Twilio create and send message');
+      res.status(SUCCESS).send('Twilio client: sending message');
     }
   });
 });
 
 // POST from Twilio
-// @trigger send text message to serviceNumber
+// @param text message sent to serviceNumber +16042391416
 // @return text back
 app.post('/message/in', function(req, res) {
-   console.log('Twilio: receiving message to ' + req.body.To);
+   console.log(req.method + ' ' + req.url + ' Twilio: receiving message to ' + req.body.To);
 
    if(String(req.body.To) === serviceNum || true) {
      var sId = req.body.SmsMessageSid,
          message = req.body.Body,
          fromNum = req.body.From;
 
-     responseLogger(200, true, req.method + ' ' + req.url + ' Twilio receive message');
+     responseLogger(SUCCESS, 'Twilio receive message');
 
      // TODO check database for user, and send info to security
 
@@ -116,15 +122,21 @@ app.post('/message/in', function(req, res) {
        from: serviceNum,
      }, function(err, message) {
        if(err){
-         responseLogger(500, false, req.method + ' ' + req.url + ' Twilio response and create message\n' + req.body);
+         responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and create message\n' + req.body);
          errorHandler(JSON.stringify(err));
-         res.send(500);
+         res.send(UNKNOWN_CLIENT_ERROR);
        } else {
-         responseLogger(200, true, req.method + ' ' + req.url + ' Twilio response and create message');
-         res.status(200).send('Twilio client: responding to message');
+         responseLogger(SUCCESS, 'Twilio response and create message');
+         res.status(SUCCESS).send('Twilio client: responding to message');
        };
      });
    } else {
-     responseLogger(400, false, req.method + ' ' + req.url + ' Twilio receive message BAD REQUEST');
+     responseLogger(BADREQUEST, 'Twilio receive message');
    }
+});
+
+// POST from direct URL
+// @param
+app.post('/help', function(req, res) {
+  console.log('VanHacks service: receiving data from ');
 });
