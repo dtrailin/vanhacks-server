@@ -140,13 +140,15 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 });
 
 Parse.Cloud.afterSave('HelpEvent',function(request) {
+  console.log('Parse afterSave called by: HelpEvent');
   var object = JSON.parse(JSON.stringify(request.object));
   var user = JSON.parse(JSON.stringify(request)).user;
   var lat = object.lat;
   var lon = object.lon;
   var email = user.email;
+  console.log('email', email, 'lat', lat, 'lon', lon);
 
-  query = new Parse.Query('_User');
+  query = new Parse.Query("Parse.User");
   query.containedIn('email', email);
   query.find({
     success: function(results) {
