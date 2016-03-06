@@ -65,7 +65,7 @@ app.get('/info', function(req, res) {
 //test credentials
 var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
 var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
-var twilioClient = require('twilio')(accountSid, authToken);
+var twilio = require('twilio')(accountSid, authToken);
 
 var serviceNum = "+16042391416";
 var securityNum = "+16479953366";
@@ -77,7 +77,7 @@ app.post('/log', function(req, res) {
 
 app.get('/message/out', function(req, res) {
   console.log('Twilio: sending message to ' + securityNum);
-  twilioClient.messages.create({
+  twilio.messages.create({
       body: "Sent message from VanHacks server",
       to: securityNum,
       from: serviceNum
@@ -120,7 +120,7 @@ app.post('/message/in', function(req, res) {
    request += '\n From ' + req.From;
    console.log(request);
 
-    // twilioClient.messages.create({
+    // twilio.messages.create({
     //   body: "Message received!! :D yayay",
     //   to: securityNum,
     //   from: serviceNum,
