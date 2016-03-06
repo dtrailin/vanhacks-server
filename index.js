@@ -77,11 +77,7 @@ var serviceNum = '+16042391416';
 var securityNum = '+16479953366';
 
 function sendMessage(toNum, fromNum, body) {
-<<<<<<< HEAD
-  console.log('Twilio: sending message to ' + to + ' from ' + fromNum);
-=======
   console.log('Twilio: sending message to ' + toNum + ' from ' + fromNum);
->>>>>>> d000838a128e717948fafae0c10987a8e61185c6
   twilio.messages.create({
       body: body,
       to: toNum,
