@@ -8,7 +8,7 @@ Parse.Cloud.define('submitForm', function(request, response) {
     var email = request.params.email;
 
     var query = new Parse.Query(Parse.User);
-    
+
     query.equalTo('email', email);
     // First is efficient for returning one user
     query.first({
@@ -60,7 +60,7 @@ Parse.Cloud.define('submitForm', function(request, response) {
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     // var firstName = request.object.get('firstName');
     // var lastName = request.object.get('lastName');
-    // var birthDate = request.object.get('birthDate'); 
+    // var birthDate = request.object.get('birthDate');
     // var mobilePhone = request.object.get('mobilePhone');
     // var workPhone = request.object.get('workPhone');
     // var username = request.object.get('username');
@@ -74,7 +74,7 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
     // var firstNamePartner = request.object.get('firstNamePartner');
     // var lastNamePartner = request.object.get('lastNamePartner');
-    // var birthDatePartner = request.object.get('birthDatePartner'); 
+    // var birthDatePartner = request.object.get('birthDatePartner');
     // var mobilePhonePartner = request.object.get('mobilePhonePartner');
     // var workPhonePartner = request.object.get('workPhonePartner');
     // var usernamePartner = request.object.get('usernamePartner');
@@ -137,4 +137,19 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     //     if (!licensePlate) return response.error('Please enter a valid license plate');
     // }
     response.success('YESSSSS MOTHERFUCKER');
+});
+
+Parse.Cloud.afterSave('HelpEvent',function(request) {
+  console.log('afterSave HelpEvent being called');
+  console.log(request.body);
+  // query = new Parse.Query('User');
+  // query.get(request.body('user').id, {
+  //   success: function(user) {
+  //     console.log('successful post');
+  //     // post.increment("comments");
+  //     // post.save();
+  //   },
+  //   error: function(error) {
+  //     console.error("Got an error " + error.code + " : " + error.message);
+  //   }
 });

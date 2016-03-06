@@ -203,6 +203,7 @@ app.get('/sendHelp', function(req, res) {
         res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not send security message from xx' + serviceNum);
       } else {
         console.log(SUCCESS, 'Twilio sent security message from', serviceNum);
+        res.status(200).send('Twilio sent security message from', serviceNum);
       }
     });
   });
