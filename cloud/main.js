@@ -151,6 +151,7 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
     error: function(error) {
       console.log(error);
       alert("Error: " + error.code + " " + error.message);
+    }
   });
 
   console.log('afterSave HelpEvent being called');
