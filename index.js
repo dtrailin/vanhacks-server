@@ -62,11 +62,11 @@ app.get('/info', function(req, res) {
 // Twilio
 
 var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
-var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
+var authToken = '92ea91beabd04e0cfd3fcbff68c8f0ae';
 var twilio = require('twilio')(accountSid, authToken);
 
-var serviceNum = "+16042391416";
-var securityNum = "+16479953366";
+var serviceNum = '+16042391416';
+var securityNum = '+16479953366';
 
 app.post('/log', function(req, res) {
   requestLogger(200, true, req.body);
@@ -76,7 +76,7 @@ app.post('/log', function(req, res) {
 app.get('/message/out', function(req, res) {
   console.log('Twilio: sending message to ' + securityNum);
   twilio.messages.create({
-      body: "Sent message from VanHacks server",
+      body: 'Sent message from VanHacks server',
       to: securityNum,
       from: serviceNum
   }, function(err, message) {
@@ -93,12 +93,12 @@ app.get('/message/out', function(req, res) {
 
 // Post new incoming message to service
 app.post('/message/in', function(req, res) {
-   console.log('Twilio: receiving message to ' + serviceNum);
+   console.log('Twilio: receiving message to ' + req.body.To);
 
-   if(String(req.body.To) === serviceNum) {
+   if(String(req.body.To) === serviceNum || true) {
      var sId = req.body.SmsMessageSid,
          message = req.body.Body,
-         fromNum = String(req.body.From);
+         fromNum = req.body.From;
 
      responseLogger(200, true, req.method + ' ' + req.url + ' Twilio receive message');
 
@@ -106,20 +106,20 @@ app.post('/message/in', function(req, res) {
 
     // User response
      twilio.messages.create({
-       body: "Message received! :)",
-       to: fromNum,
+       body: 'Message received! :)',
+       to: String(fromNum),
        from: serviceNum,
      }, function(err, message) {
        if(err){
-         responseLogger(500, false, req.method + ' ' + req.url + ' Twilio response message');
+         responseLogger(500, false, req.method + ' ' + req.url + ' Twilio response and create message');
          res.send(500).render('error', { error: err });
        } else {
-         responseLogger(200, true, req.method + ' ' + req.url + ' Twilio response message');
+         responseLogger(200, true, req.method + ' ' + req.url + ' Twilio response and create message');
          res.status(200).send('Twilio client: responding to message');
        };
      });
    } else {
-     responseLogger(500, false, req.method + ' ' + req.url + ' Twilio receive message');
+     responseLogger(400, false, req.method + ' ' + req.url + ' Twilio receive message BAD REQUEST');
    }
 
 });
