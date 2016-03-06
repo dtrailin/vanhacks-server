@@ -98,7 +98,7 @@ app.post('/message/in', function(req, res) {
    if(String(req.body.To) === serviceNum) {
      var sId = req.body.SmsMessageSid,
          message = req.body.Body,
-         fromNum = req.body.From;
+         fromNum = String(req.body.From);
 
      responseLogger(200, true, req.method + ' ' + req.url + ' Twilio receive message');
 
