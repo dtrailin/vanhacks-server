@@ -41,6 +41,9 @@ function responseLogger(status, success, message) {
   var message = success ? message + ' SUCCESS' : message + ' ERROR';
   console.log(status + ' - ' + message);
 }
+function errorHandler(error) {
+  console.log('Error: ' + error);
+}
 
 app.get('/', function(req, res) {
   logger(200, true, '/ Calling VanHacks service')
@@ -82,6 +85,7 @@ app.get('/message/out', function(req, res) {
   }, function(err, message) {
     if(err){
       responseLogger(500, false, req.method + ' ' + req.url + ' Twilio create and send message');
+      errorHandler(err);
       res.send(500).render('error', { error: err });
     } else {
       var sId = message.sid;
@@ -91,7 +95,9 @@ app.get('/message/out', function(req, res) {
   });
 });
 
-// Post new incoming message to service
+// POST from Twilio
+// @trigger send text message to serviceNumber
+// @return text back
 app.post('/message/in', function(req, res) {
    console.log('Twilio: receiving message to ' + req.body.To);
 
@@ -106,12 +112,14 @@ app.post('/message/in', function(req, res) {
 
     // User response
      twilio.messages.create({
-       body: 'Message received! :)',
+       body: 'Message received! :D',
        to: String(fromNum),
        from: serviceNum,
      }, function(err, message) {
        if(err){
          responseLogger(500, false, req.method + ' ' + req.url + ' Twilio response and create message');
+         console.log(req.body.Body);
+         errorHandler(err);
          res.send(500).render('error', { error: err });
        } else {
          responseLogger(200, true, req.method + ' ' + req.url + ' Twilio response and create message');
