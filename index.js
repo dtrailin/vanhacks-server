@@ -1,4 +1,5 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var ParseServer = require('parse-server').ParseServer;
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGOLAB_URI;
@@ -20,6 +21,10 @@ var api = new ParseServer({
 // javascriptKey, restAPIKey, dotNetKey, clientKey
 
 var app = express();
+app.user(bodyParser.urlencoded({
+  extended: true
+}));
+
 // Serve the Parse API on the /parse URL prefix
 var mountPath = process.env.PARSE_MOUNT || '/parse';
 app.use(mountPath, api);
@@ -91,13 +96,24 @@ app.get('/message/out', function(req, res) {
 // Post new incoming message to service
 app.post('/message/in', function(req, res) {
    console.log('Twilio: receiving message to ' + serviceNum + '\n' + req);
+
+   if(twilioClient.validateExpressRequest(req, authToken){
+     var resp = new twilioClient.TwimlResponse();
+
+     resp.say('yay express and twilio');
+     res.type('text/xml');
+     res.send(resp.toString());
+   });
+
    var req = '';
    req += 'req ' + req;
+   req += '\nmethod ' + req.method;
    req += '\nrawBody ' + req.rawBody;
    req += '\nquery ' + req.query;
    req += '\nparams ' + req.params;
    req += '\nurl ' + req.url;
    req += '\nURL ' + req.URL;
+   req += '\nheaders ' + req.headers;
    console.log(body);
 
    var request = '\n Body ' + req.Body;
