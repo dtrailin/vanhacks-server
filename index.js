@@ -177,16 +177,8 @@ var findUserById = function(db, id, callback) {
    });
 };
 var findUserByPhonenumber = function(db, phoneNumber, callback) {
-   var cursor = db.collection("_User").findOne({phoneNumber: phoneNumber});
-   cursor.each(function(err, doc) {
-      if(!err) {
-        if (doc != null) {
-           console.dir(doc);
-        } else {
-           callback();
-        }
-      }
-   });
+   var user = db.collection("_User").findOne({phoneNumber: phoneNumber});
+   console.log(user);
 };
 
 
