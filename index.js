@@ -89,7 +89,7 @@ app.get('/message/out', function(req, res) {
 });
 
 app.post('/message/in', function(req, res) {
-   console.log('Twilio: receiving message to ' + serviceNum + '\n' + JSON.stringify(req));
+   console.log('Twilio: receiving message to ' + serviceNum + '\n' + JSON.stringify(req.body));
     twilioClient.messages.create({
       body: "Message received!! :D yayay",
       to: securityNum,
