@@ -57,14 +57,20 @@ app.get('/info', function(req, res) {
 
 // Twilio
 
-var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
-var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
+//test credentials
+var accountSid = 'ACbc066431d618a4e120b1e4d54008d062';
+var authToken = "96030337ee308e86419b1981763f0d2a";
 var twilioClient = require('twilio')(accountSid, authToken);
 
 var serviceNum = "+16042391416";
 var securityNum = "+16479953366";
 
-app.get('/sendSms', function(req, res) {
+app.post('/log', function(req, res) {
+  requestLogger(200, true, req.body);
+  res.send(200);
+});
+
+app.get('/message/out', function(req, res) {
   console.log('Twilio: sending message to ' + securityNum);
   twilioClient.messages.create({
       body: "Calling VanHacks security system !!",
@@ -72,11 +78,11 @@ app.get('/sendSms', function(req, res) {
       from: serviceNum
   }, function(err, message) {
     if(err){
-      responseLogger(500, false, 'GET /sendSms Twilio create and send message');
+      responseLogger(500, false, 'GET /message/out Twilio create and send message');
       res.send(500).render('error', { error: err });
     } else {
       var sId = message.sid;
-      responseLogger(200, true, 'GET /sendSms Twilio create and send message');
+      responseLogger(200, true, 'GET /message/out Twilio create and send message');
       // process.stdout.write(message.sid);
       res.status(200).send('Twilio client: sending message');
     }
@@ -84,26 +90,28 @@ app.get('/sendSms', function(req, res) {
 });
 
 app.post('/message/in', function(req, res) {
-   console.log('Twilio: receiving message to ' + securityNum);
-   responseLogger(200, true, JSON.stringify(req.body));
-   res.send(200);
+   console.log('Twilio: receiving message to ' + serviceNum);
+   console.log('request body ' + req.Body);
+   console.log('request from ' + req.From);
 
-   twilioClient.messages.create({
-     body: "Message received",
-     to: securityNum,
-     from: serviceNum,
-   }, function(err, message) {
-     if(err){
-       responseLogger(500, false, 'POST /message/in Twilio response message');
-       res.send(500).render('error', { error: err });
-     } else ClassName.prototype.methodName = function () {
-       responseLogger(200, true, 'POST /message/in Twilio create and send message');
-       res.status(200).send('Twilio client: responding to message');
-     };
-   });
-});
+   twiml.message('Thanks, your message was received!');
+   console.log(req);
 
-app.get('/message/in', function(req, res){
-  responseLogger(200, true, JSON.stringify(req.body));
-  res.send(200);
+   res.writeHead(200, {'Content-Type': 'text/xml'});
+   res.end(twiml.toString());
+  //  twilioClient.messages.create({
+  //    body: "Message received!! :D yayay",
+  //    to: securityNum,
+  //    from: serviceNum,
+  //  }, function(err, message) {
+  //    if(err){
+  //      responseLogger(500, false, 'POST /message/in Twilio response message');
+  //      res.send(500).render('error', { error: err });
+  //    } else ClassName.prototype.methodName = function () {
+  //      responseLogger(200, true, 'POST /message/in Twilio response message');
+  //      console.log(req.Body);
+  //      res.status(200).send('Twilio client: responding to message');
+  //    };
+  //  });
+
 });
