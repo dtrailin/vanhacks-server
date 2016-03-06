@@ -89,19 +89,22 @@ app.get('/message/out', function(req, res) {
 });
 
 app.post('/message/in', function(req, res) {
-   console.log('Twilio: receiving message to ' + serviceNum + '\n' + JSON.stringify(req.body));
-    twilioClient.messages.create({
-      body: "Message received!! :D yayay",
-      to: securityNum,
-      from: serviceNum,
-    }, function(err, message) {
-      if(err){
-        responseLogger(500, false, 'POST /message/in Twilio response message');
-        res.send(500).render('error', { error: err });
-      } else ClassName.prototype.methodName = function () {
-        responseLogger(200, true, 'POST /message/in Twilio response message');
-        console.log(req.Body);
-        res.status(200).send('Twilio client: responding to message');
-      };
-    });
+   console.log('Twilio: receiving message to ' + serviceNum + '\n' + req);
+   console.log(req.url);
+   console.log(req.rawBody);
+   console.log(req.query);
+    // twilioClient.messages.create({
+    //   body: "Message received!! :D yayay",
+    //   to: securityNum,
+    //   from: serviceNum,
+    // }, function(err, message) {
+    //   if(err){
+    //     responseLogger(500, false, 'POST /message/in Twilio response message');
+    //     res.send(500).render('error', { error: err });
+    //   } else ClassName.prototype.methodName = function () {
+    //     responseLogger(200, true, 'POST /message/in Twilio response message');
+    //     console.log(req.Body);
+    //     res.status(200).send('Twilio client: responding to message');
+    //   };
+    // });
 });
