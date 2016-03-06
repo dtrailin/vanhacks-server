@@ -141,8 +141,10 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
 Parse.Cloud.afterSave('HelpEvent',function(request) {
   console.log('afterSave HelpEvent being called');
-  console.log('request', JSON.stringify(request));
-  console.log('body', JSON.stringify(request.body));
+  console.log('request', request);
+  console.log('request json', JSON.parse(JSON.stringify(request)));
+  console.log('body', JSON.stringify(request.object));
+  console.log('body lat', JSON.parse(JSON.stringify(request.object)).lat);
   var lat = request.object.get("lat");
   var lon = request.object.get("lon");
   var email = request.user.get("email");
