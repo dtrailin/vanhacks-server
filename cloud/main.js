@@ -148,8 +148,8 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
   var email = user.email;
   console.log('email', email, 'lat', lat, 'lon', lon);
 
-  query = new Parse.Query("Parse.User");
-  query.containedIn('email', email);
+  query = new Parse.Query("User");
+  query.equalTo('email', email);
   query.find({
     success: function(results) {
       alert("Successfully retrieved " + results.length + " scores.");
