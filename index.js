@@ -61,7 +61,6 @@ app.get('/info', function(req, res) {
   res.send(200);
 });
 
-
 // Twilio
 
 var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
@@ -108,7 +107,7 @@ app.post('/message/in', function(req, res) {
 
      responseLogger(200, true, req.method + ' ' + req.url + ' Twilio receive message');
 
-     // TODO check database for user, and send to security
+     // TODO check database for user, and send info to security
 
     // User response
      twilio.messages.create({
@@ -117,10 +116,9 @@ app.post('/message/in', function(req, res) {
        from: serviceNum,
      }, function(err, message) {
        if(err){
-         responseLogger(500, false, req.method + ' ' + req.url + ' Twilio response and create message');
-         console.log(req.body.Body);
-         errorHandler(err);
-         res.send(500).render('error', { error: err });
+         responseLogger(500, false, req.method + ' ' + req.url + ' Twilio response and create message\n' + req.body);
+         errorHandler(JSON.stringify(err));
+         res.send(500);
        } else {
          responseLogger(200, true, req.method + ' ' + req.url + ' Twilio response and create message');
          res.status(200).send('Twilio client: responding to message');
@@ -129,5 +127,4 @@ app.post('/message/in', function(req, res) {
    } else {
      responseLogger(400, false, req.method + ' ' + req.url + ' Twilio receive message BAD REQUEST');
    }
-
 });
