@@ -140,21 +140,14 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 });
 
 Parse.Cloud.afterSave('HelpEvent',function(request) {
-  console.log('afterSave HelpEvent being called');
-  console.log('request json', JSON.parse(JSON.stringify(request)));
-  console.log('body lat', JSON.parse(JSON.stringify(request.object)).lat);
   var object = JSON.parse(JSON.stringify(request.object));
   var user = JSON.parse(JSON.stringify(request)).user;
-  console.log('user', user);
   var lat = object.lat;
   var lon = object.lon;
   var email = user.email;
-  console.log('lat', lat);
-  console.log('long', lon);
-  console.log('email', email);
 
   query = new Parse.Query('_User');
-  query.equalTo('email', email);
+  query.containedIn('email', email);
   query.find({
     success: function(results) {
       alert("Successfully retrieved " + results.length + " scores.");
