@@ -133,4 +133,5 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     // var validateLicensePlate = function(licensePlate) {
     //     if (!licensePlate) return response.error('Please enter a valid license plate');
     // }
+    response.success('YESSSSS MOTHERFUCKER');
 });
