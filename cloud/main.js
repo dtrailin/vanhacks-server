@@ -140,20 +140,6 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 });
 
 Parse.Cloud.afterSave('HelpEvent',function(request) {
-  query = new Parse.Query('User');
-  query.equalTo('email', 'absb@gmail.com');
-  query.find({
-    success: function(results) {
-      alert("Successfully retrieved " + results.length + " scores.");
-      // Do something with the returned Parse.Object values
-      console.log(results);
-    },
-    error: function(error) {
-      console.log(error);
-      alert("Error: " + error.code + " " + error.message);
-    }
-  });
-
   console.log('afterSave HelpEvent being called');
   var object = JSON.parse(JSON.stringify(request.object));
   var lat = object.lat;
@@ -162,13 +148,16 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
   console.log(object, lat, long, email);
 
   // query = new Parse.Query('User');
-  // query.get(request.body('user').id, {
-  //   success: function(user) {
-  //     console.log('successful post');
-  //     // post.increment("comments");
-  //     // post.save();
+  // query.equalTo('email', 'absb@gmail.com');
+  // query.find({
+  //   success: function(results) {
+  //     alert("Successfully retrieved " + results.length + " scores.");
+  //     // Do something with the returned Parse.Object values
+  //     console.log(results);
   //   },
   //   error: function(error) {
-  //     console.error("Got an error " + error.code + " : " + error.message);
+  //     console.log(error);
+  //     alert("Error: " + error.code + " " + error.message);
   //   }
+  // });
 });
