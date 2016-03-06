@@ -145,22 +145,25 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
   console.log('body lat', JSON.parse(JSON.stringify(request.object)).lat);
   var object = JSON.parse(JSON.stringify(request.object));
   var user = JSON.parse(JSON.stringify(request.user));
+  console.log('user', user);
   var lat = object.lat;
   var lon = object.lon;
   var email = user.email;
-  console.log(lat, long, email);
+  console.log('lat', lat);
+  console.log('long', long);
+  console.log('email', email);
 
-  // query = new Parse.Query('User');
-  // query.equalTo('email', 'absb@gmail.com');
-  // query.find({
-  //   success: function(results) {
-  //     alert("Successfully retrieved " + results.length + " scores.");
-  //     // Do something with the returned Parse.Object values
-  //     console.log(results);
-  //   },
-  //   error: function(error) {
-  //     console.log(error);
-  //     alert("Error: " + error.code + " " + error.message);
-  //   }
-  // });
+  query = new Parse.Query('User');
+  query.equalTo('email', email);
+  query.find({
+    success: function(results) {
+      alert("Successfully retrieved " + results.length + " scores.");
+      // Do something with the returned Parse.Object values
+      console.log(results);
+    },
+    error: function(error) {
+      console.log(error);
+      alert("Error: " + error.code + " " + error.message);
+    }
+  });
 });
