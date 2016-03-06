@@ -162,7 +162,7 @@ app.post('/message/in', function(req, res) {
 // Database
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
-var dbUrl = 'mongodb://localhost:27017/dev';
+var dbUrl = 'mongodb://localhost:28488/dev';
 
 
 
