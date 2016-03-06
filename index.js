@@ -139,6 +139,7 @@ app.post('/message/in', function(req, res) {
           }, function(err, message) {
            if(err) {
              responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio did not reply to user\n' + JSON.stringify(req.body));
+             console.log(err);
              res.status(UNKNOWN_CLIENT_ERROR).send('Twilio did not reply to user');
            } else {
              responseLogger(SUCCESS, 'Twilio responded to message');
@@ -162,7 +163,7 @@ app.post('/message/in', function(req, res) {
 // Database
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
-var dbUrl = 'mongodb://localhost:28488/dev';
+var dbUrl = 'mongodb://localhost:27017/dev';
 
 
 
@@ -189,7 +190,7 @@ app.get('/sendHelp', function(req, res) {
     //HURRAY!! We are connected. :)
     console.log('Connection established to', dbUrl);
 
-    var collection = db.collection("_User");
+    var collection = db.collection('_User');
     var query = { phoneNumber: phoneNum };
     collection.findOne(query, function(err, item) {
       if(err){
