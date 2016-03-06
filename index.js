@@ -105,18 +105,19 @@ app.post('/message/in', function(req, res) {
   //        res.send(resp.toString());
   //    }
 
-   var req = '';
-   req += 'req ' + req;
-   req += '\nmethod ' + req.method;
-   req += '\nrawBody ' + req.rawBody;
-   req += '\nquery ' + req.query;
-   req += '\nparams ' + req.params;
-   req += '\nurl ' + req.url;
-   req += '\nURL ' + req.URL;
-   req += '\nheaders ' + req.headers;
-   console.log(req);
+   var request = '';
+   request += 'req ' + req;
+   request += '\nmethod ' + req.method;
+   request += '\nrawBody ' + req.rawBody;
+   request += '\nquery ' + req.query;
+   request += '\nparams ' + req.params;
+   request += '\nurl ' + req.url;
+   request += '\nURL ' + req.URL;
+   request += '\nheaders ' + req.headers;
+   console.log(request);
 
-   var request = '\n Body ' + req.Body;
+  //reset request
+   request = '\n Body ' + req.Body;
    request += '\n From ' + req.From;
    console.log(request);
 
