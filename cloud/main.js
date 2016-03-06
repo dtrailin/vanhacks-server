@@ -155,7 +155,7 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
   });
 
   console.log('afterSave HelpEvent being called');
-  var object = request.object;
+  var object = JSON.parse(JSON.stringify(request.object));
   var lat = object.lat;
   var lon = objct.lon;
   var email = request.user.email;
