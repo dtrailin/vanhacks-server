@@ -82,7 +82,7 @@ app.get('/message/out', function(req, res) {
       res.send(500).render('error', { error: err });
     } else {
       var sId = message.sid;
-      responseLogger(200, true, 'GET /message/out Twilio create and send message\n' + message);
+      responseLogger(200, true, 'GET /message/out Twilio create and send message\n' + JSON.stringify(message) +'\n' + JSON.parse(message));
       // process.stdout.write(message.sid);
       res.status(200).send('Twilio client: sending message');
     }
@@ -91,27 +91,29 @@ app.get('/message/out', function(req, res) {
 
 app.post('/message/in', function(req, res) {
    console.log('Twilio: receiving message to ' + serviceNum);
-   console.log('request body ' + req.Body);
-   console.log('request from ' + req.From);
+    twilioClient.messages.create({
+      body: "Message received!! :D yayay",
+      to: securityNum,
+      from: serviceNum,
+    }, function(err, message) {
+      if(err){
+        responseLogger(500, false, 'POST /message/in Twilio response message');
+        res.send(500).render('error', { error: err });
+      } else ClassName.prototype.methodName = function () {
+        responseLogger(200, true, 'POST /message/in Twilio response message');
+        console.log(req.Body);
+        res.status(200).send('Twilio client: responding to message');
+      };
+    });
 
-   twiml.message('Thanks, your message was received!');
-   console.log(req);
-
-   res.writeHead(200, {'Content-Type': 'text/xml'});
-   res.end(twiml.toString());
-  //  twilioClient.messages.create({
-  //    body: "Message received!! :D yayay",
-  //    to: securityNum,
-  //    from: serviceNum,
-  //  }, function(err, message) {
-  //    if(err){
-  //      responseLogger(500, false, 'POST /message/in Twilio response message');
-  //      res.send(500).render('error', { error: err });
-  //    } else ClassName.prototype.methodName = function () {
-  //      responseLogger(200, true, 'POST /message/in Twilio response message');
-  //      console.log(req.Body);
-  //      res.status(200).send('Twilio client: responding to message');
-  //    };
-  //  });
+    //online solution for debugging
+  //  console.log('request body ' + req.Body);
+  //  console.log('request from ' + req.From);
+  //
+  //  twiml.message('Thanks, your message was received!');
+  //  console.log(req);
+  //
+  //  res.writeHead(200, {'Content-Type': 'text/xml'});
+  //  res.end(twiml.toString());
 
 });
