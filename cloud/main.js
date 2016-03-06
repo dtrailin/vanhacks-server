@@ -144,16 +144,16 @@ Parse.Cloud.afterSave('HelpEvent',function(request) {
   console.log('request json', JSON.parse(JSON.stringify(request)));
   console.log('body lat', JSON.parse(JSON.stringify(request.object)).lat);
   var object = JSON.parse(JSON.stringify(request.object));
-  var user = JSON.parse(JSON.stringify(request.user));
+  var user = JSON.parse(JSON.stringify(request)).user;
   console.log('user', user);
   var lat = object.lat;
   var lon = object.lon;
   var email = user.email;
   console.log('lat', lat);
-  console.log('long', long);
+  console.log('long', lon);
   console.log('email', email);
 
-  query = new Parse.Query('User');
+  query = new Parse.Query('_User');
   query.equalTo('email', email);
   query.find({
     success: function(results) {
