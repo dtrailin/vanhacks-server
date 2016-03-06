@@ -87,7 +87,7 @@ app.post('/message/in', function(req, res) {
          message = req.body.Body,
          fromNum = String(req.body.From);
 
-     responseLogger(SUCCESS, 'Twilio received message sending message to ' + serviceNumber + ' from ' + fromNum);
+     responseLogger(SUCCESS, 'Twilio received message sending message to ' + serviceNum + ' from ' + fromNum);
 
      // TODO check database for user, and send info to security
 
@@ -95,7 +95,7 @@ app.post('/message/in', function(req, res) {
      twilio.messages.create({
          body: body,
          to: fromNum,
-         from: serviceNumber
+         from: serviceNum
      }, function(err, message) {
        if(err) {
          responseLogger(UNKNOWN_CLIENT_ERROR, 'Twilio response and did not create message\n' + JSON.stringify(req.body));
