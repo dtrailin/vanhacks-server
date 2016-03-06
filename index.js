@@ -1,11 +1,11 @@
-// Example express application adding the parse-server module to expose Parse
-// compatible API routes.
-
 var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 
-var databaseUri = process.env.DATABASE_URI || process.env.MONGOLAB_URI;
+var accountSid = 'AC21adaea8c9b81cba7ab6e41b6c866186';
+var authToken = "92ea91beabd04e0cfd3fcbff68c8f0ae";
+var twilioClient = require('twilio')(accountSid, authToken);
 
+var databaseUri = process.env.DATABASE_URI || process.env.MONGOLAB_URI;
 if (!databaseUri) {
   console.log('DATABASE_URI not specified, falling back to localhost.');
 }
@@ -24,7 +24,6 @@ var api = new ParseServer({
 // javascriptKey, restAPIKey, dotNetKey, clientKey
 
 var app = express();
-
 // Serve the Parse API on the /parse URL prefix
 var mountPath = process.env.PARSE_MOUNT || '/parse';
 app.use(mountPath, api);
@@ -49,4 +48,15 @@ app.get('/info', function(req, res) {
   Challenge: Its challenge to participants is to develop a mobile personal security app, designed to work as a 24/7 monitored alarm system.';
   console.log('GET /info' + '\n' + description);
   res.status(200).send('VanHacks Spidermans-webdevs service is up');
+});
+
+app.get('/sendSms', function(req, res) {
+  twilioClient.messages.create({
+      body: "Testing VanHacks twilio service :)",
+      to: "+16479953366",
+      from: "+16042391416"
+  }, function(err, message) {
+      process.stdout.write(message.sid);
+  });
+  res.status(200).send('Sending message from twilio....');
 });
