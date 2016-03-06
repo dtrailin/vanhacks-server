@@ -73,7 +73,7 @@ app.post('/log', function(req, res) {
 app.get('/message/out', function(req, res) {
   console.log('Twilio: sending message to ' + securityNum);
   twilioClient.messages.create({
-      body: "Calling VanHacks security system !!",
+      body: "Sent message from VanHacks server",
       to: securityNum,
       from: serviceNum
   }, function(err, message) {
@@ -82,15 +82,14 @@ app.get('/message/out', function(req, res) {
       res.send(500).render('error', { error: err });
     } else {
       var sId = message.sid;
-      responseLogger(200, true, 'GET /message/out Twilio create and send message\n' + JSON.stringify(message) +'\n' + JSON.parse(message));
-      // process.stdout.write(message.sid);
+      responseLogger(200, true, 'GET /message/out Twilio create and send message');
       res.status(200).send('Twilio client: sending message');
     }
   });
 });
 
 app.post('/message/in', function(req, res) {
-   console.log('Twilio: receiving message to ' + serviceNum);
+   console.log('Twilio: receiving message to ' + serviceNum + '\n' + JSON.stringify(req));
     twilioClient.messages.create({
       body: "Message received!! :D yayay",
       to: securityNum,
@@ -105,15 +104,4 @@ app.post('/message/in', function(req, res) {
         res.status(200).send('Twilio client: responding to message');
       };
     });
-
-    //online solution for debugging
-  //  console.log('request body ' + req.Body);
-  //  console.log('request from ' + req.From);
-  //
-  //  twiml.message('Thanks, your message was received!');
-  //  console.log(req);
-  //
-  //  res.writeHead(200, {'Content-Type': 'text/xml'});
-  //  res.end(twiml.toString());
-
 });
