@@ -21,8 +21,8 @@ var api = new ParseServer({
 // javascriptKey, restAPIKey, dotNetKey, clientKey
 
 var app = express();
-app.user(bodyParser.urlencoded({
-  extended: true
+app.use(bodyParser.urlencoded({
+    extended: true
 }));
 
 // Serve the Parse API on the /parse URL prefix
